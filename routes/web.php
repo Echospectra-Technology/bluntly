@@ -92,3 +92,8 @@ Route::get('/moderation', function () {
 Route::get('/report', function () {
     return view('pages.report');
 })->name('report');
+
+// SEO routes
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/sitemap-pages.xml', [\App\Http\Controllers\SitemapController::class, 'pages'])->name('sitemap.pages');
+Route::get('/sitemap-stories.xml', [\App\Http\Controllers\SitemapController::class, 'stories'])->name('sitemap.stories');

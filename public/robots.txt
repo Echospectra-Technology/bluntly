@@ -1,2 +1,23 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow admin/sensitive areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: */create
+Disallow: */edit
+Disallow: */delete
+
+# Allow important pages
+Allow: /post/*
+Allow: /posts
+Allow: /trending
+Allow: /about
+Allow: /terms
+Allow: /privacy
+
+# Sitemap
+Sitemap: /sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

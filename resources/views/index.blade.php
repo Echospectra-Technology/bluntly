@@ -1,6 +1,71 @@
 @extends('layouts.web')
 
 @section('title', 'Bluntly - Say it as it is.')
+@section('meta_keywords', 'anonymous stories, confessions, rants, anonymous posting, share secrets, unfiltered content, anonymous social media')
+
+@push('structured-data')
+@php
+    $websiteStructuredData = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebSite',
+        'name' => 'Bluntly',
+        'description' => "The space to say what you can't say anywhere else. Anonymous voices, unfiltered truths.",
+        'url' => url('/'),
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => [
+                '@type' => 'EntryPoint',
+                'urlTemplate' => url('/posts') . '?search={search_term_string}'
+            ],
+            'query-input' => 'required name=search_term_string'
+        ],
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'Bluntly',
+            'url' => url('/'),
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset('apple-touch-icon.png')
+            ]
+        ]
+    ];
+
+    $itemListStructuredData = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        'name' => 'Trending Stories on Bluntly',
+        'description' => 'Latest trending anonymous stories and confessions',
+        'itemListElement' => []
+    ];
+
+    foreach($trendingStories as $index => $story) {
+        $itemListStructuredData['itemListElement'][] = [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'item' => [
+                '@type' => 'Article',
+                '@id' => route('post', $story->slug),
+                'headline' => $story->title,
+                'description' => Str::limit(strip_tags($story->body), 160),
+                'url' => route('post', $story->slug),
+                'datePublished' => $story->created_at->toISOString(),
+                'author' => [
+                    '@type' => 'Person',
+                    'name' => '@' . $story->alias
+                ]
+            ]
+        ];
+    }
+@endphp
+
+<script type="application/ld+json">
+{!! json_encode($websiteStructuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+</script>
+
+<script type="application/ld+json">
+{!! json_encode($itemListStructuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
 
 @section('content')
     <x-navigation current-page="home" />
@@ -73,17 +138,17 @@
                         <div class="flex items-center justify-between text-sm text-gray-500">
                             <div class="flex items-center gap-4">
                                 <div class="flex items-center gap-1">
-                                    <button class="hover:text-green-600 transition-colors">↑</button>
+                                    <button class="hover:text-green-600 transition-colors" aria-label="Upvote story">↑</button>
                                     <span class="text-xs font-medium">{{ $story->upvotes }}</span>
-                                    <button class="hover:text-red-600 transition-colors">↓</button>
+                                    <button class="hover:text-red-600 transition-colors" aria-label="Downvote story">↓</button>
                                 </div>
                                 <span class="flex items-center gap-1">
-                                    <span>💬</span>
+                                    <span aria-label="Comments">💬</span>
                                     <span class="text-xs">{{ $story->comments->count() }}</span>
                                 </span>
                             </div>
                             <div class="flex items-center gap-4">
-                                <span>👁 {{ number_format($story->views) }}</span>
+                                <span><span aria-label="Views">👁</span> {{ number_format($story->views) }}</span>
                                 <span>{{ $story->created_at->diffForHumans() }}</span>
                             </div>
                         </div>

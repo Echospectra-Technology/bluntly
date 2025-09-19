@@ -1,0 +1,21 @@
+{
+    "name": "Bluntly",
+    "short_name": "Bluntly",
+    "description": "Anonymous stories, confessions, and rants",
+    "icons": [
+        {
+            "src": "/apple-touch-icon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "theme_color": "#000000",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "/"
+}
