@@ -20,6 +20,7 @@ class Story extends Model
         'upvotes',
         'downvotes',
         'views',
+        'theme_id',
     ];
 
     protected $casts = [
@@ -65,6 +66,11 @@ class Story extends Model
     public function views()
     {
         return $this->hasMany(StoryView::class);
+    }
+
+    public function theme()
+    {
+        return $this->belongsTo(WeeklyTheme::class, 'theme_id');
     }
 
     public function scopePublished($query)

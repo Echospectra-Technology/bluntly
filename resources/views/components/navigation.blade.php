@@ -21,6 +21,7 @@
             <!-- Full Navigation Menu for Home Page -->
             <div class="hidden md:flex items-center space-x-8">
                 <a href="{{ route('feed') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Read Stories</a>
+                <a href="{{ route('themes') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Weekly Themes</a>
                 <a href="{{ route('post.create') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Post
                     Anonymously</a>
                 <a href="{{ route('rules') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Rules &
@@ -42,6 +43,12 @@
         @else
             <!-- Medium-style Navigation for Other Pages -->
             <div class="flex items-center space-x-6">
+                <!-- Navigation Links -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <a href="{{ route('feed') }}" class="text-sm text-gray-600 hover:text-black transition-colors {{ $currentPage === 'stories' ? 'font-medium text-black' : '' }}">Stories</a>
+                    <a href="{{ route('themes') }}" class="text-sm text-gray-600 hover:text-black transition-colors {{ $currentPage === 'themes' ? 'font-medium text-black' : '' }}">Themes</a>
+                </div>
+                
                 <!-- Search -->
                 <div class="hidden md:flex items-center">
                     <div class="relative">
@@ -80,6 +87,7 @@
             <div class="max-w-6xl mx-auto px-6">
                 <div class="flex flex-col space-y-4 pt-4">
                     <a href="{{ route('feed') }}" class="text-sm text-gray-600">Read Stories</a>
+                    <a href="{{ route('themes') }}" class="text-sm text-gray-600">Weekly Themes</a>
                     <a href="{{ route('post.create') }}" class="text-sm text-gray-600">Post Anonymously</a>
                     <a href="{{ route('rules') }}" class="text-sm text-gray-600">Rules & Guidelines</a>
                     <a href="{{ route('terms') }}" class="text-sm text-gray-600">Terms of Use</a>

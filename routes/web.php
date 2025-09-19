@@ -7,7 +7,7 @@ use Livewire\Volt\Volt;
 // Volt::route('/', 'index')->name('index');
 Route::get('/', function () {
     // Get trending stories for homepage
-    $trendingStories = \App\Models\Story::with(['tags'])
+    $trendingStories = \App\Models\Story::with(['tags', 'theme'])
         ->where('status', 'published')
         ->where('created_at', '>=', now()->subWeek())
         ->orderByRaw('(upvotes - downvotes) DESC')
@@ -15,7 +15,10 @@ Route::get('/', function () {
         ->take(3)
         ->get();
 
-    return view('index', compact('trendingStories'));
+    // Get current weekly theme
+    $currentTheme = \App\Models\WeeklyTheme::current()->first();
+
+    return view('index', compact('trendingStories', 'currentTheme'));
 })->name('index');
 
 // Health check endpoint
@@ -44,6 +47,8 @@ Route::get('/health', function () {
 
 Volt::route('/posts', 'pages.stories')->name('feed');
 Volt::route('/post/create', 'pages.create-post')->name('post.create');
+Volt::route('/themes', 'pages.themes')->name('themes');
+Volt::route('/theme/{slug}', 'pages.theme-details')->name('theme.details');
 
 // Story details route with Open Graph support
 Route::get('/post/{slug}', function ($slug) {

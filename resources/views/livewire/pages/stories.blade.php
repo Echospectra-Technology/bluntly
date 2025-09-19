@@ -12,6 +12,19 @@ new #[Layout('layouts.app')] class extends Component {
 
     public $currentFilter = 'newest';
     public $selectedCategory = 'all';
+    public $selectedTheme = null;
+
+    public function mount()
+    {
+        // Check for theme parameter in URL
+        $themeSlug = request()->get('theme');
+        if ($themeSlug) {
+            $theme = \App\Models\WeeklyTheme::where('slug', $themeSlug)->first();
+            if ($theme) {
+                $this->selectedTheme = $theme->id;
+            }
+        }
+    }
 
     public function setFilter($filter)
     {
@@ -25,13 +38,32 @@ new #[Layout('layouts.app')] class extends Component {
         $this->resetPage();
     }
 
+    public function clearThemeFilter()
+    {
+        $this->selectedTheme = null;
+        $this->resetPage();
+    }
+
+    public function getCurrentThemeProperty()
+    {
+        if ($this->selectedTheme) {
+            return \App\Models\WeeklyTheme::find($this->selectedTheme);
+        }
+        return null;
+    }
+
     public function getStoriesProperty()
     {
-        $query = Story::with(['tags', 'comments'])->where('status', 'published');
+        $query = Story::with(['tags', 'comments', 'theme'])->where('status', 'published');
 
         // Apply category filter
         if ($this->selectedCategory !== 'all') {
             $query->where('category', $this->selectedCategory);
+        }
+
+        // Apply theme filter
+        if ($this->selectedTheme) {
+            $query->where('theme_id', $this->selectedTheme);
         }
 
         // Apply sorting
@@ -194,6 +226,69 @@ new #[Layout('layouts.app')] class extends Component {
             </div>
         </div>
 
+        <!-- Theme Filter Display -->
+        @if($this->currentTheme)
+            <div class="bg-gradient-to-r from-purple-50 to-blue-50 border-b border-purple-200">
+                <div class="max-w-6xl mx-auto px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-purple-600">🎯</span>
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ $this->currentTheme->name }}</h3>
+                                <p class="text-sm text-gray-600">{{ $this->currentTheme->description }}</p>
+                            </div>
+                        </div>
+                        <button wire:click="clearThemeFilter" 
+                                class="text-sm text-purple-600 hover:text-purple-700 font-medium">
+                            Show All Stories ×
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Weekly Theme Banner for Feed -->
+        @if(!$this->currentTheme)
+            @php
+                $feedCurrentTheme = \App\Models\WeeklyTheme::current()->first();
+            @endphp
+            @if($feedCurrentTheme)
+                <div class="bg-gray-50 border-b border-gray-100">
+                    <div class="max-w-6xl mx-auto px-6 py-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center text-xs font-medium">
+                                        T
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h3 class="font-medium text-gray-900 text-sm md:text-base">{{ $feedCurrentTheme->name }}</h3>
+                                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">This Week</span>
+                                        @if($feedCurrentTheme->days_remaining > 0)
+                                            <span class="text-xs text-gray-500 hidden sm:inline">{{ $feedCurrentTheme->days_remaining }} day{{ $feedCurrentTheme->days_remaining == 1 ? '' : 's' }} left</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs md:text-sm text-gray-600">{{ Str::limit($feedCurrentTheme->description, 80) }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <a href="{{ route('post.create') }}?theme={{ $feedCurrentTheme->slug }}" 
+                                   class="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+                                    Share Story
+                                </a>
+                                <a href="{{ route('feed') }}?theme={{ $feedCurrentTheme->slug }}" 
+                                   class="text-gray-600 text-sm font-medium hover:text-black transition-colors">
+                                    Filter by Theme →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endif
+
         <!-- Main Content Grid -->
         <div class="max-w-6xl mx-auto px-6 py-8">
             <div class="grid lg:grid-cols-3 lg:gap-8">
@@ -212,6 +307,13 @@ new #[Layout('layouts.app')] class extends Component {
                                             class="text-xs uppercase tracking-wide text-gray-400 bg-gray-100 px-2 py-1 rounded">
                                             {{ $story->category }}
                                         </span>
+                                    @endif
+                                    @if ($story->theme)
+                                        <span class="mx-2 text-gray-300">•</span>
+                                        <a href="{{ route('theme.details', $story->theme->slug) }}" 
+                                           class="text-xs bg-black text-white px-2 py-1 rounded-full hover:bg-gray-800 transition-colors">
+                                            {{ $story->theme->name }}
+                                        </a>
                                     @endif
                                 </div>
 
