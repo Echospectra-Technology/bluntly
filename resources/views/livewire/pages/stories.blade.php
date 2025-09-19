@@ -1,0 +1,366 @@
+<?php
+
+use Livewire\Attributes\Layout;
+use Livewire\Volt\Component;
+use Livewire\WithPagination;
+use App\Models\Story;
+use App\Models\Tag;
+use App\Services\AnonymousUserService;
+
+new #[Layout('layouts.app')] class extends Component {
+    use WithPagination;
+
+    public $currentFilter = 'newest';
+    public $selectedCategory = 'all';
+
+    public function setFilter($filter)
+    {
+        $this->currentFilter = $filter;
+        $this->resetPage();
+    }
+
+    public function setCategory($category)
+    {
+        $this->selectedCategory = $category;
+        $this->resetPage();
+    }
+
+    public function getStoriesProperty()
+    {
+        $query = Story::with(['tags', 'comments'])->where('status', 'published');
+
+        // Apply category filter
+        if ($this->selectedCategory !== 'all') {
+            $query->where('category', $this->selectedCategory);
+        }
+
+        // Apply sorting
+        switch ($this->currentFilter) {
+            case 'trending':
+                // Trending: High vote ratio in last 24 hours
+                $query
+                    ->where('created_at', '>=', now()->subDay())
+                    ->orderByRaw('(upvotes - downvotes) DESC')
+                    ->orderBy('views', 'desc');
+                break;
+            case 'popular':
+                // Popular: All time high votes
+                $query->orderByRaw('(upvotes - downvotes) DESC')->orderBy('views', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        return $query->paginate(10);
+    }
+
+    public function getTrendingTagsProperty()
+    {
+        return Tag::withCount([
+            'stories' => function ($query) {
+                $query->where('status', 'published')->where('created_at', '>=', now()->subWeek());
+            },
+        ])
+            ->orderBy('stories_count', 'desc')
+            ->limit(8)
+            ->get();
+    }
+
+    public function getTopStoriesProperty()
+    {
+        return Story::with(['tags'])
+            ->where('status', 'published')
+            ->where('created_at', '>=', now()->subWeek())
+            ->orderByRaw('(upvotes - downvotes) DESC')
+            ->limit(3)
+            ->get();
+    }
+
+    public function toggleVote($storyId, $voteType)
+    {
+        $anonymousService = app(AnonymousUserService::class);
+        $anonymousId = $anonymousService->getAnonymousId();
+
+        $existingVote = \App\Models\Vote::where('item_type', 'story')->where('item_id', $storyId)->where('cookie_hash', $anonymousId)->first();
+
+        if ($existingVote) {
+            if ($existingVote->value === $voteType) {
+                // Remove vote if clicking same button
+                $existingVote->delete();
+                $this->updateStoryVoteCounts($storyId);
+            } else {
+                // Change vote
+                $existingVote->update(['value' => $voteType]);
+                $this->updateStoryVoteCounts($storyId);
+            }
+        } else {
+            // Create new vote
+            \App\Models\Vote::create([
+                'item_type' => 'story',
+                'item_id' => $storyId,
+                'value' => $voteType,
+                'cookie_hash' => $anonymousId,
+                'created_at' => now(),
+            ]);
+            $this->updateStoryVoteCounts($storyId);
+        }
+    }
+
+    private function updateStoryVoteCounts($storyId)
+    {
+        $upvotes = \App\Models\Vote::where('item_type', 'story')->where('item_id', $storyId)->where('value', 'up')->count();
+
+        $downvotes = \App\Models\Vote::where('item_type', 'story')->where('item_id', $storyId)->where('value', 'down')->count();
+
+        Story::where('id', $storyId)->update([
+            'upvotes' => $upvotes,
+            'downvotes' => $downvotes,
+        ]);
+    }
+
+    public function getUserVote($storyId)
+    {
+        $anonymousService = app(AnonymousUserService::class);
+        return $anonymousService->hasVotedOn('story', $storyId);
+    }
+
+    public function loadMore()
+    {
+        $this->nextPage();
+    }
+}; ?>
+
+<div>
+    <x-navigation current-page="stories" />
+
+    <!-- Main Content -->
+    <div class="bg-white min-h-screen">
+        <!-- Header Section -->
+        <div class="bg-gray-50 border-b border-gray-100">
+            <div class="max-w-6xl mx-auto px-6 py-8">
+                <div class="max-w-4xl">
+                    <h1 class="text-xl md:text-2xl font-light mb-3">Stories</h1>
+                    <p class="text-sm text-gray-600 font-light">Anonymous voices, unfiltered truths</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="bg-white border-b border-gray-100 sticky top-0 z-10">
+            <div class="max-w-6xl mx-auto px-6 py-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                    <!-- Sort Options -->
+                    <div class="flex items-center space-x-1">
+                        <button wire:click="setFilter('newest')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'newest' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            Newest
+                        </button>
+                        <button wire:click="setFilter('trending')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'trending' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            Trending
+                        </button>
+                        <button wire:click="setFilter('popular')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'popular' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            Popular
+                        </button>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="flex items-center space-x-1">
+                        <button wire:click="setCategory('all')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'all' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            All
+                        </button>
+                        <button wire:click="setCategory('confession')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'confession' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            Confession
+                        </button>
+                        <button wire:click="setCategory('rant')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'rant' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            Rant
+                        </button>
+                        <button wire:click="setCategory('gist')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'gist' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            Gist
+                        </button>
+                        <button wire:click="setCategory('story')"
+                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'story' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            Story
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="max-w-6xl mx-auto px-6 py-8">
+            <div class="grid lg:grid-cols-3 lg:gap-8">
+                <!-- Stories Feed -->
+                <div class="lg:col-span-2">
+                    <div class="space-y-12">
+                        @forelse ($this->stories as $story)
+                            <article class="border-b border-gray-100 pb-12 last:border-b-0">
+                                <div class="flex items-center mb-4">
+                                    <span class="text-sm font-medium text-gray-700">@ {{ $story->alias }}</span>
+                                    <span class="mx-2 text-gray-300">•</span>
+                                    <span class="text-sm text-gray-500">{{ $story->created_at->diffForHumans() }}</span>
+                                    @if ($story->category)
+                                        <span class="mx-2 text-gray-300">•</span>
+                                        <span
+                                            class="text-xs uppercase tracking-wide text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                                            {{ $story->category }}
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <a href="{{ route('post', $story->slug) }}" class="block">
+                                    <h2
+                                        class="text-xl md:text-2xl font-medium mb-3 leading-tight hover:text-gray-700 cursor-pointer transition-colors">
+                                        {{ $story->title }}
+                                    </h2>
+                                </a>
+
+                                <p class="text-base text-gray-600 leading-relaxed mb-3">
+                                    {{ Str::limit(strip_tags($story->body), 200) }}
+                                </p>
+
+                                <!-- Tags -->
+                                @if ($story->tags->isNotEmpty())
+                                    <div class="flex flex-wrap gap-2 mb-6">
+                                        @foreach ($story->tags->take(3) as $tag)
+                                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                                                #{{ $tag->name }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                                        <div class="flex items-center gap-1">
+                                            <button wire:click="toggleVote({{ $story->id }}, 'up')"
+                                                class="hover:text-green-600 transition-colors {{ $this->getUserVote($story->id) === 'up' ? 'text-green-600' : '' }}">
+                                                ↑
+                                            </button>
+                                            <span class="text-xs font-medium">{{ $story->upvotes }}</span>
+                                            <button wire:click="toggleVote({{ $story->id }}, 'down')"
+                                                class="hover:text-red-600 transition-colors {{ $this->getUserVote($story->id) === 'down' ? 'text-red-600' : '' }}">
+                                                ↓
+                                            </button>
+                                        </div>
+                                        <span class="flex items-center gap-1">
+                                            <span>💬</span>
+                                            <span class="text-xs">{{ $story->comments->count() }} comments</span>
+                                        </span>
+                                        <span class="flex items-center space-x-1">
+                                            <span>👁</span>
+                                            <span class="text-xs">{{ number_format($story->views) }} views</span>
+                                        </span>
+                                    </div>
+
+                                    <button class="text-gray-500 hover:text-black transition-colors text-sm px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                        </svg>
+                                        Share
+                                    </button>
+                                </div>
+                            </article>
+                        @empty
+                            <div class="text-center py-12">
+                                <p class="text-gray-500">No stories found for the selected criteria.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Pagination -->
+                    @if ($this->stories->hasPages())
+                        <div class="mt-12">
+                            {{ $this->stories->links() }}
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="hidden lg:block space-y-8">
+                    <!-- Top Stories -->
+                    <div class="bg-gray-50 p-5 rounded-lg">
+                        <h3 class="text-base font-medium mb-4">Top Picks</h3>
+                        <div class="space-y-4">
+                            @foreach ($this->topStories as $story)
+                                <article class="border-b border-gray-200 pb-4 last:border-b-0">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xs font-medium text-gray-700">@ {{ $story->alias }}</span>
+                                        @if ($story->category)
+                                            <span class="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded">
+                                                {{ $story->category }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <a href="{{ route('post', $story->slug) }}">
+                                        <h4
+                                            class="text-sm font-medium text-gray-900 mb-2 leading-tight hover:text-gray-700 transition-colors">
+                                            {{ Str::limit($story->title, 60) }}
+                                        </h4>
+                                    </a>
+                                    <div class="flex items-center gap-3 text-xs text-gray-500">
+                                        <span class="flex items-center gap-1">
+                                            <span>↑</span>
+                                            <span>{{ $story->upvotes }}</span>
+                                        </span>
+                                        <span class="flex items-center gap-1">
+                                            <span>💬</span>
+                                            <span>{{ $story->comments->count() }}</span>
+                                        </span>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Featured/Ad Space -->
+                    <div class="bg-gradient-to-br from-gray-900 to-black p-5 rounded-lg text-white">
+                        <div class="text-center">
+                            <h3 class="text-base font-medium mb-2">Share Your Story</h3>
+                            <p class="text-xs text-gray-300 mb-4">Your voice matters. Post anonymously and connect with
+                                others who understand.</p>
+                            <a href="/post/create"
+                                class="inline-block bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                                Write Your Story
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Trending Topics -->
+                    <div class="bg-gray-50 p-5 rounded-lg">
+                        <h3 class="text-base font-medium mb-4">Trending Topics</h3>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach ($this->trendingTags as $tag)
+                                <button wire:click="setCategory('{{ $tag->slug }}')"
+                                    class="bg-white border border-gray-200 px-3 py-1.5 rounded-full text-xs text-gray-700 hover:border-gray-300 cursor-pointer transition-colors {{ $selectedCategory === $tag->slug ? 'bg-black text-white border-black' : '' }}">
+                                    #{{ $tag->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Community Guidelines -->
+                    <div class="bg-gray-50 p-5 rounded-lg">
+                        <h3 class="text-base font-medium mb-3">Community</h3>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <a href="/rules" class="block hover:text-black transition-colors">Community
+                                Guidelines</a>
+                            <a href="/about" class="block hover:text-black transition-colors">About
+                                Bluntly</a>
+                            <a href="/privacy" class="block hover:text-black transition-colors">Privacy Policy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <x-footer />
+</div>
