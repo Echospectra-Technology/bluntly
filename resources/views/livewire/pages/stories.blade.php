@@ -171,9 +171,9 @@ new #[Layout('layouts.app')] class extends Component {
     <div class="bg-white min-h-screen">
         <!-- Header Section -->
         <div class="bg-gray-50 border-b border-gray-100">
-            <div class="max-w-6xl mx-auto px-6 py-8">
+            <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
                 <div class="max-w-4xl">
-                    <h1 class="text-xl md:text-2xl font-light mb-3">Stories</h1>
+                    <h1 class="text-xl md:text-2xl font-light mb-2 md:mb-3">Stories</h1>
                     <p class="text-sm text-gray-600 font-light">Anonymous voices, unfiltered truths</p>
                 </div>
             </div>
@@ -181,44 +181,44 @@ new #[Layout('layouts.app')] class extends Component {
 
         <!-- Filter Bar -->
         <div class="bg-white border-b border-gray-100 sticky top-0 z-10">
-            <div class="max-w-6xl mx-auto px-6 py-4">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div class="max-w-6xl mx-auto px-4 md:px-6 py-4">
+                <div class="space-y-3">
                     <!-- Sort Options -->
-                    <div class="flex items-center space-x-1">
+                    <div class="flex items-center space-x-1 overflow-x-auto pb-1">
                         <button wire:click="setFilter('newest')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'newest' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'newest' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
                             Newest
                         </button>
                         <button wire:click="setFilter('trending')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'trending' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'trending' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
                             Trending
                         </button>
                         <button wire:click="setFilter('popular')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'popular' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'popular' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
                             Popular
                         </button>
                     </div>
 
                     <!-- Category Filter -->
-                    <div class="flex items-center space-x-1">
+                    <div class="flex items-center space-x-1 overflow-x-auto pb-1">
                         <button wire:click="setCategory('all')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'all' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'all' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
                             All
                         </button>
                         <button wire:click="setCategory('confession')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'confession' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'confession' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
                             Confession
                         </button>
                         <button wire:click="setCategory('rant')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'rant' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'rant' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
                             Rant
                         </button>
                         <button wire:click="setCategory('gist')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'gist' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'gist' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
                             Gist
                         </button>
                         <button wire:click="setCategory('story')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'story' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'story' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
                             Story
                         </button>
                     </div>
@@ -227,19 +227,18 @@ new #[Layout('layouts.app')] class extends Component {
         </div>
 
         <!-- Theme Filter Display -->
-        @if($this->currentTheme)
+        @if ($this->currentTheme)
             <div class="bg-gradient-to-r from-purple-50 to-blue-50 border-b border-purple-200">
                 <div class="max-w-6xl mx-auto px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <span class="text-purple-600">🎯</span>
                             <div>
                                 <h3 class="font-medium text-gray-900">{{ $this->currentTheme->name }}</h3>
                                 <p class="text-sm text-gray-600">{{ $this->currentTheme->description }}</p>
                             </div>
                         </div>
-                        <button wire:click="clearThemeFilter" 
-                                class="text-sm text-purple-600 hover:text-purple-700 font-medium">
+                        <button wire:click="clearThemeFilter"
+                            class="text-sm text-purple-600 hover:text-purple-700 font-medium">
                             Show All Stories ×
                         </button>
                     </div>
@@ -248,38 +247,46 @@ new #[Layout('layouts.app')] class extends Component {
         @endif
 
         <!-- Weekly Theme Banner for Feed -->
-        @if(!$this->currentTheme)
+        @if (!$this->currentTheme)
             @php
                 $feedCurrentTheme = \App\Models\WeeklyTheme::current()->first();
             @endphp
-            @if($feedCurrentTheme)
+            @if ($feedCurrentTheme)
                 <div class="bg-gray-50 border-b border-gray-100">
-                    <div class="max-w-6xl mx-auto px-6 py-6">
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-                            <div class="flex items-center gap-4">
+                    <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6">
+                        <div class="space-y-3 md:space-y-0 md:flex md:items-center md:justify-between">
+                            <div class="flex items-start gap-3">
                                 <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center text-xs font-medium">
+                                    <div
+                                        class="w-8 h-8 md:w-10 md:h-10 bg-black text-white rounded-lg flex items-center justify-center text-xs font-medium">
                                         T
                                     </div>
                                 </div>
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h3 class="font-medium text-gray-900 text-sm md:text-base">{{ $feedCurrentTheme->name }}</h3>
-                                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">This Week</span>
-                                        @if($feedCurrentTheme->days_remaining > 0)
-                                            <span class="text-xs text-gray-500 hidden sm:inline">{{ $feedCurrentTheme->days_remaining }} day{{ $feedCurrentTheme->days_remaining == 1 ? '' : 's' }} left</span>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                                        <h3 class="font-medium text-gray-900 text-sm md:text-base">
+                                            {{ $feedCurrentTheme->name }}</h3>
+                                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">This
+                                            Week</span>
+                                        @if ($feedCurrentTheme->days_remaining > 0)
+                                            <span class="text-xs text-gray-500 hidden sm:inline">
+                                                {{ $feedCurrentTheme->days_remaining }}
+                                                day{{ $feedCurrentTheme->days_remaining == 1 ? '' : 's' }} left
+                                            </span>
                                         @endif
                                     </div>
-                                    <p class="text-xs md:text-sm text-gray-600">{{ Str::limit($feedCurrentTheme->description, 80) }}</p>
+                                    <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                                        {{ Str::limit($feedCurrentTheme->description, 100) }}
+                                    </p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <a href="{{ route('post.create') }}?theme={{ $feedCurrentTheme->slug }}" 
-                                   class="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
+                            <div class="flex items-center gap-2 md:gap-3 md:flex-shrink-0">
+                                <a href="{{ route('post.create') }}?theme={{ $feedCurrentTheme->slug }}"
+                                    class="bg-black text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium hover:bg-gray-800 transition-colors">
                                     Share Story
                                 </a>
-                                <a href="{{ route('feed') }}?theme={{ $feedCurrentTheme->slug }}" 
-                                   class="text-gray-600 text-sm font-medium hover:text-black transition-colors">
+                                <a href="{{ route('feed') }}?theme={{ $feedCurrentTheme->slug }}"
+                                    class="text-gray-600 text-xs md:text-sm font-medium hover:text-black transition-colors">
                                     Filter by Theme →
                                 </a>
                             </div>
@@ -290,42 +297,50 @@ new #[Layout('layouts.app')] class extends Component {
         @endif
 
         <!-- Main Content Grid -->
-        <div class="max-w-6xl mx-auto px-6 py-8">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
             <div class="grid lg:grid-cols-3 lg:gap-8">
                 <!-- Stories Feed -->
                 <div class="lg:col-span-2">
-                    <div class="space-y-12">
+                    <div class="space-y-8 md:space-y-12">
                         @forelse ($this->stories as $story)
-                            <article class="border-b border-gray-100 pb-12 last:border-b-0">
-                                <div class="flex items-center mb-4">
-                                    <span class="text-sm font-medium text-gray-700">@ {{ $story->alias }}</span>
-                                    <span class="mx-2 text-gray-300">•</span>
-                                    <span class="text-sm text-gray-500">{{ $story->created_at->diffForHumans() }}</span>
-                                    @if ($story->category)
+                            <article class="border-b border-gray-100 pb-8 md:pb-12 last:border-b-0">
+                                <!-- Mobile-first metadata layout -->
+                                <div class="mb-4 space-y-2">
+                                    <!-- Main metadata line -->
+                                    <div class="flex items-center text-sm">
+                                        <span class="font-medium text-gray-700">{{ '@' . $story->alias }}</span>
                                         <span class="mx-2 text-gray-300">•</span>
-                                        <span
-                                            class="text-xs uppercase tracking-wide text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                                            {{ $story->category }}
-                                        </span>
-                                    @endif
+                                        <span class="text-gray-500">{{ $story->created_at->diffForHumans() }}</span>
+                                        @if ($story->category)
+                                            <span class="mx-2 text-gray-300">•</span>
+                                            <span
+                                                class="text-xs uppercase tracking-wide text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                                                {{ $story->category }}
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <!-- Theme badge on separate line for mobile -->
                                     @if ($story->theme)
-                                        <span class="mx-2 text-gray-300">•</span>
-                                        <a href="{{ route('theme.details', $story->theme->slug) }}" 
-                                           class="text-xs bg-black text-white px-2 py-1 rounded-full hover:bg-gray-800 transition-colors">
-                                            {{ $story->theme->name }}
-                                        </a>
+                                        <div class="flex items-center">
+                                            <a href="{{ route('theme.details', $story->theme->slug) }}"
+                                                class="inline-flex items-center text-xs bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-colors">
+                                                <span class="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                                {{ $story->theme->name }}
+                                            </a>
+                                        </div>
                                     @endif
                                 </div>
 
                                 <a href="{{ route('post', $story->slug) }}" class="block">
                                     <h2
-                                        class="text-xl md:text-2xl font-medium mb-3 leading-tight hover:text-gray-700 cursor-pointer transition-colors">
+                                        class="text-lg md:text-xl lg:text-2xl font-medium mb-3 leading-tight hover:text-gray-700 cursor-pointer transition-colors">
                                         {{ $story->title }}
                                     </h2>
                                 </a>
 
-                                <p class="text-base text-gray-600 leading-relaxed mb-3">
-                                    {{ Str::limit(strip_tags($story->body), 200) }}
+                                <p class="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
+                                    {{ Str::limit(strip_tags($story->body), 150) }}
                                 </p>
 
                                 <!-- Tags -->
@@ -340,33 +355,38 @@ new #[Layout('layouts.app')] class extends Component {
                                 @endif
 
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-6 text-sm text-gray-500">
+                                    <div class="flex items-center space-x-4 md:space-x-6 text-sm text-gray-500">
                                         <div class="flex items-center gap-1">
                                             <button wire:click="toggleVote({{ $story->id }}, 'up')"
-                                                class="hover:text-green-600 transition-colors {{ $this->getUserVote($story->id) === 'up' ? 'text-green-600' : '' }}">
+                                                class="hover:text-green-600 transition-colors p-1 {{ $this->getUserVote($story->id) === 'up' ? 'text-green-600' : '' }}">
                                                 ↑
                                             </button>
-                                            <span class="text-xs font-medium">{{ $story->upvotes }}</span>
+                                            <span class="text-xs font-medium min-w-[1rem] text-center">{{ $story->upvotes }}</span>
                                             <button wire:click="toggleVote({{ $story->id }}, 'down')"
-                                                class="hover:text-red-600 transition-colors {{ $this->getUserVote($story->id) === 'down' ? 'text-red-600' : '' }}">
+                                                class="hover:text-red-600 transition-colors p-1 {{ $this->getUserVote($story->id) === 'down' ? 'text-red-600' : '' }}">
                                                 ↓
                                             </button>
                                         </div>
                                         <span class="flex items-center gap-1">
                                             <span>💬</span>
-                                            <span class="text-xs">{{ $story->comments->count() }} comments</span>
+                                            <span class="text-xs hidden sm:inline">{{ $story->comments->count() }} comments</span>
+                                            <span class="text-xs sm:hidden">{{ $story->comments->count() }}</span>
                                         </span>
-                                        <span class="flex items-center space-x-1">
+                                        <span class="flex items-center gap-1">
                                             <span>👁</span>
-                                            <span class="text-xs">{{ number_format($story->views) }} views</span>
+                                            <span class="text-xs hidden sm:inline">{{ number_format($story->views) }} views</span>
+                                            <span class="text-xs sm:hidden">{{ number_format($story->views) }}</span>
                                         </span>
                                     </div>
 
-                                    <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')" class="text-gray-500 hover:text-black transition-colors text-sm px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                    <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')"
+                                        class="text-gray-500 hover:text-black transition-colors text-xs md:text-sm px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z">
+                                            </path>
                                         </svg>
-                                        Share
+                                        <span class="hidden sm:inline">Share</span>
                                     </button>
                                 </div>
                             </article>
@@ -394,7 +414,8 @@ new #[Layout('layouts.app')] class extends Component {
                             @foreach ($this->topStories as $story)
                                 <article class="border-b border-gray-200 pb-4 last:border-b-0">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-xs font-medium text-gray-700">@ {{ $story->alias }}</span>
+                                        <span
+                                            class="text-xs font-medium text-gray-700">{{ '@' . $story->alias }}</span>
                                         @if ($story->category)
                                             <span class="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded">
                                                 {{ $story->category }}
@@ -465,7 +486,7 @@ new #[Layout('layouts.app')] class extends Component {
     </div>
 
     <x-footer />
-    
+
     <script>
         function copyToClipboard(url) {
             navigator.clipboard.writeText(url).then(() => {

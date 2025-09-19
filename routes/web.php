@@ -48,11 +48,16 @@ Route::get('/health', function () {
 Volt::route('/posts', 'pages.stories')->name('feed');
 Volt::route('/post/create', 'pages.create-post')->name('post.create');
 Volt::route('/themes', 'pages.themes')->name('themes');
-Volt::route('/theme/{slug}', 'pages.theme-details')->name('theme.details');
+
+// Theme details redirect to feed with theme filter
+Route::get('/theme/{slug}', function ($slug) {
+    $theme = \App\Models\WeeklyTheme::where('slug', $slug)->firstOrFail();
+    return redirect()->route('feed', ['theme' => $slug]);
+})->name('theme.details');
 
 // Story details route with Open Graph support
 Route::get('/post/{slug}', function ($slug) {
-    $story = \App\Models\Story::with(['tags', 'comments.replies'])
+    $story = \App\Models\Story::with(['tags', 'comments.replies', 'theme'])
         ->where('slug', $slug)
         ->where('status', 'published')
         ->firstOrFail();

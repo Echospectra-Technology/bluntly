@@ -27,10 +27,10 @@ new #[Layout('layouts.app')] class extends Component {
 
         // Load suggested tags from database
         $this->suggestedTags = Tag::orderBy('name')->pluck('name')->toArray();
-        
+
         // Load available themes (only current themes)
         $this->availableThemes = \App\Models\WeeklyTheme::current()->get();
-            
+
         // Check if theme is provided via URL parameter
         $themeSlug = request()->get('theme');
         if ($themeSlug) {
@@ -268,46 +268,48 @@ new #[Layout('layouts.app')] class extends Component {
                 </div>
 
                 <!-- Weekly Theme Selection -->
-                @if(count($availableThemes) > 0)
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Weekly Theme (Optional)
-                    </label>
-                    
-                    @foreach($availableThemes as $theme)
-                        <div class="mb-3 p-4 border rounded-lg cursor-pointer transition-all duration-200 hover:border-purple-300 hover:bg-purple-50/50 {{ $selectedTheme == $theme->id ? 'border-purple-500 bg-purple-50' : 'border-gray-200' }}"
-                             wire:click="$set('selectedTheme', {{ $selectedTheme == $theme->id ? 'null' : $theme->id }})">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-purple-600">🎯</span>
-                                        <h3 class="font-medium text-gray-900">{{ $theme->name }}</h3>
-                                        @if($theme->status === 'active')
-                                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Active</span>
-                                        @elseif($theme->status === 'upcoming')
-                                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Upcoming</span>
+                @if (count($availableThemes) > 0)
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Weekly Theme (Optional)
+                        </label>
+
+                        @foreach ($availableThemes as $theme)
+                            <div class="mb-3 p-4 border rounded-lg cursor-pointer transition-all duration-200 hover:border-purple-300 hover:bg-purple-50/50 {{ $selectedTheme == $theme->id ? 'border-purple-500 bg-purple-50' : 'border-gray-200' }}"
+                                wire:click="$set('selectedTheme', {{ $selectedTheme == $theme->id ? 'null' : $theme->id }})">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <h3 class="font-medium text-gray-900">{{ $theme->name }}</h3>
+                                            @if ($theme->status === 'active')
+                                                <span
+                                                    class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Active</span>
+                                            @elseif($theme->status === 'upcoming')
+                                                <span
+                                                    class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Upcoming</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-2">{{ $theme->description }}</p>
+                                        @if ($theme->prompt_text)
+                                            <p class="text-xs text-gray-500 italic">"{{ $theme->prompt_text }}"</p>
                                         @endif
                                     </div>
-                                    <p class="text-sm text-gray-600 mb-2">{{ $theme->description }}</p>
-                                    @if($theme->prompt_text)
-                                        <p class="text-xs text-gray-500 italic">"{{ $theme->prompt_text }}"</p>
-                                    @endif
-                                </div>
-                                <div class="ml-4">
-                                    <div class="w-4 h-4 rounded-full border-2 {{ $selectedTheme == $theme->id ? 'border-purple-500 bg-purple-500' : 'border-gray-300' }}">
-                                        @if($selectedTheme == $theme->id)
-                                            <div class="w-2 h-2 bg-white rounded-full mt-0.5 ml-0.5"></div>
-                                        @endif
+                                    <div class="ml-4">
+                                        <div
+                                            class="w-4 h-4 rounded-full border-2 {{ $selectedTheme == $theme->id ? 'border-purple-500 bg-purple-500' : 'border-gray-300' }}">
+                                            @if ($selectedTheme == $theme->id)
+                                                <div class="w-2 h-2 bg-white rounded-full mt-0.5 ml-0.5"></div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
-                    
-                    <p class="text-xs text-gray-500 mt-2">
-                        Participating in weekly themes helps your story reach more readers interested in the topic.
-                    </p>
-                </div>
+                        @endforeach
+
+                        <p class="text-xs text-gray-500 mt-2">
+                            Participating in weekly themes helps your story reach more readers interested in the topic.
+                        </p>
+                    </div>
                 @endif
 
                 <!-- Title -->

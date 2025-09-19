@@ -17,7 +17,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     public function mount($slug)
     {
         $this->slug = $slug;
-        $this->story = Story::with(['tags', 'comments.replies'])
+        $this->story = Story::with(['tags', 'comments.replies', 'theme'])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
@@ -302,13 +302,20 @@ new #[Layout('components.layouts.app')] class extends Component {
             <!-- Story Meta -->
             <div class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between mb-4">
                 <div class="flex items-center flex-wrap gap-2 md:gap-3">
-                    <span class="text-xs font-medium text-gray-700">@ {{ $story->alias }}</span>
+                    <span class="text-xs font-medium text-gray-700">{{ '@' . $story->alias }}</span>
                     <span class="text-gray-300 hidden md:inline">•</span>
                     <span class="text-xs text-gray-500">{{ $story->created_at->diffForHumans() }}</span>
                     @if ($story->category)
                         <span class="text-gray-300 hidden md:inline">•</span>
                         <span
                             class="text-xs uppercase tracking-wide text-gray-400 bg-gray-100 px-2 py-1 rounded">{{ strtoupper($story->category) }}</span>
+                    @endif
+                    @if ($story->theme)
+                        <span class="text-gray-300 hidden md:inline">•</span>
+                        <a href="{{ route('theme.details', $story->theme->slug) }}"
+                            class="text-xs bg-black text-white px-2 py-1 rounded-full hover:bg-gray-800 transition-colors">
+                            {{ $story->theme->name }}
+                        </a>
                     @endif
                 </div>
 
@@ -514,8 +521,8 @@ new #[Layout('components.layouts.app')] class extends Component {
                                             <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
                                                 <div class="flex items-center justify-between mb-2">
                                                     <div class="flex items-center space-x-2">
-                                                        <span class="text-xs font-medium text-gray-700">@
-                                                            {{ $reply->alias }}</span>
+                                                        <span class="text-xs font-medium text-gray-700">
+                                                            {{ '@' . $reply->alias }}</span>
                                                         <span
                                                             class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
                                                     </div>
