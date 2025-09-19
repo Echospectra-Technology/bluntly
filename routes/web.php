@@ -50,3 +50,36 @@ Volt::route('/post/{slug}', 'pages.story-details')->name('post');
 Route::get('/trending', function () {
     return redirect()->route('feed', ['filter' => 'trending']);
 })->name('trending');
+
+// Static pages
+Route::get('/about', function () {
+    return view('pages.about');
+})->name('about');
+
+Route::get('/terms', function () {
+    return view('pages.terms');
+})->name('terms');
+
+Route::get('/privacy', function () {
+    return view('pages.privacy');
+})->name('privacy');
+
+Route::get('/cookies', function () {
+    return view('pages.cookies');
+})->name('cookies');
+
+Route::get('/rules', function () {
+    return view('pages.rules');
+})->name('rules');
+
+Route::get('/safety', function () {
+    return view('pages.safety');
+})->name('safety');
+
+Route::get('/moderation', function () {
+    return view('pages.moderation');
+})->name('moderation');
+
+Route::get('/report', function () {
+    return view('pages.report');
+})->name('report');

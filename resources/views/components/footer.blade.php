@@ -30,12 +30,12 @@
             <div>
                 <h4 class="text-sm font-medium text-black mb-4 uppercase tracking-wide">Community</h4>
                 <div class="space-y-3">
-                    <a href="/rules" class="block text-sm text-gray-600 hover:text-black transition-colors">Rules &
+                    <a href="{{ route('rules') }}" class="block text-sm text-gray-600 hover:text-black transition-colors">Rules &
                         Guidelines</a>
-                    <a href="/safety" class="block text-sm text-gray-600 hover:text-black transition-colors">Safety</a>
-                    <a href="/moderation"
+                    <a href="{{ route('safety') }}" class="block text-sm text-gray-600 hover:text-black transition-colors">Safety</a>
+                    <a href="{{ route('moderation') }}"
                         class="block text-sm text-gray-600 hover:text-black transition-colors">Moderation</a>
-                    <a href="/report" class="block text-sm text-gray-600 hover:text-black transition-colors">Report
+                    <a href="{{ route('report') }}" class="block text-sm text-gray-600 hover:text-black transition-colors">Report
                         Content</a>
                 </div>
             </div>
@@ -44,13 +44,13 @@
             <div>
                 <h4 class="text-sm font-medium text-black mb-4 uppercase tracking-wide">Legal</h4>
                 <div class="space-y-3">
-                    <a href="/terms" class="block text-sm text-gray-600 hover:text-black transition-colors">Terms of
+                    <a href="{{ route('terms') }}" class="block text-sm text-gray-600 hover:text-black transition-colors">Terms of
                         Use</a>
-                    <a href="/privacy" class="block text-sm text-gray-600 hover:text-black transition-colors">Privacy
+                    <a href="{{ route('privacy') }}" class="block text-sm text-gray-600 hover:text-black transition-colors">Privacy
                         Policy</a>
-                    <a href="/cookies" class="block text-sm text-gray-600 hover:text-black transition-colors">Cookie
+                    <a href="{{ route('cookies') }}" class="block text-sm text-gray-600 hover:text-black transition-colors">Cookie
                         Policy</a>
-                    <a href="/about" class="block text-sm text-gray-600 hover:text-black transition-colors">About
+                    <a href="{{ route('about') }}" class="block text-sm text-gray-600 hover:text-black transition-colors">About
                         Us</a>
                 </div>
             </div>

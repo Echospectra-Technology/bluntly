@@ -20,14 +20,14 @@
         @if ($currentPage === 'home')
             <!-- Full Navigation Menu for Home Page -->
             <div class="hidden md:flex items-center space-x-8">
-                <a href="/posts" class="text-sm text-gray-600 hover:text-black transition-colors">Read Stories</a>
-                <a href="/post/create" class="text-sm text-gray-600 hover:text-black transition-colors">Post
+                <a href="{{ route('feed') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Read Stories</a>
+                <a href="{{ route('post.create') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Post
                     Anonymously</a>
-                <a href="/rules" class="text-sm text-gray-600 hover:text-black transition-colors">Rules &
+                <a href="{{ route('rules') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Rules &
                     Guidelines</a>
-                <a href="/terms" class="text-sm text-gray-600 hover:text-black transition-colors">Terms of Use</a>
-                <a href="/privacy" class="text-sm text-gray-600 hover:text-black transition-colors">Privacy Policy</a>
-                <a href="/about" class="text-sm text-gray-600 hover:text-black transition-colors">About Us</a>
+                <a href="{{ route('terms') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Terms of Use</a>
+                <a href="{{ route('privacy') }}" class="text-sm text-gray-600 hover:text-black transition-colors">Privacy Policy</a>
+                <a href="{{ route('about') }}" class="text-sm text-gray-600 hover:text-black transition-colors">About Us</a>
             </div>
 
             <!-- Mobile Menu Button for Home -->
@@ -56,7 +56,7 @@
                 </div>
 
                 <!-- Write Button -->
-                <a href="/post/create"
+                <a href="{{ route('post.create') }}"
                     class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
                     Write
                 </a>
@@ -79,12 +79,12 @@
         <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-gray-100">
             <div class="max-w-6xl mx-auto px-6">
                 <div class="flex flex-col space-y-4 pt-4">
-                    <a href="/posts" class="text-sm text-gray-600">Read Stories</a>
-                    <a href="/post/create" class="text-sm text-gray-600">Post Anonymously</a>
-                    <a href="/rules" class="text-sm text-gray-600">Rules & Guidelines</a>
-                    <a href="/terms" class="text-sm text-gray-600">Terms of Use</a>
-                    <a href="/privacy" class="text-sm text-gray-600">Privacy Policy</a>
-                    <a href="/about" class="text-sm text-gray-600">About Us</a>
+                    <a href="{{ route('feed') }}" class="text-sm text-gray-600">Read Stories</a>
+                    <a href="{{ route('post.create') }}" class="text-sm text-gray-600">Post Anonymously</a>
+                    <a href="{{ route('rules') }}" class="text-sm text-gray-600">Rules & Guidelines</a>
+                    <a href="{{ route('terms') }}" class="text-sm text-gray-600">Terms of Use</a>
+                    <a href="{{ route('privacy') }}" class="text-sm text-gray-600">Privacy Policy</a>
+                    <a href="{{ route('about') }}" class="text-sm text-gray-600">About Us</a>
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <a href="/post/create"
+                    <a href="{{ route('post.create') }}"
                         class="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium text-center">
                         Write a Story
                     </a>
