@@ -397,11 +397,26 @@ new #[Layout('layouts.app')] class extends Component {
                         @endforelse
                     </div>
 
-                    <!-- Pagination -->
-                    @if ($this->stories->hasPages())
-                        <div class="mt-12">
-                            {{ $this->stories->links() }}
+                    <!-- Infinite Scroll Loading -->
+                    @if ($this->stories->hasMorePages())
+                        <div class="mt-12 text-center">
+                            <div wire:loading.remove wire:target="loadMore">
+                                <button wire:click="loadMore" 
+                                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg text-sm font-medium transition-colors">
+                                    Load More Stories
+                                </button>
+                            </div>
+                            <div wire:loading wire:target="loadMore" class="flex justify-center">
+                                <svg class="animate-spin h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span class="ml-2 text-gray-500">Loading more stories...</span>
+                            </div>
                         </div>
+                        
+                        <!-- Infinite Scroll Trigger -->
+                        <div x-data="infiniteScroll" x-init="init()" class="h-1" x-ref="sentinel"></div>
                     @endif
                 </div>
 
@@ -508,5 +523,45 @@ new #[Layout('layouts.app')] class extends Component {
                 alert('Link copied to clipboard!');
             });
         }
+
+        // Alpine.js component for infinite scroll
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('infiniteScroll', () => ({
+                observer: null,
+                isLoading: false,
+                
+                init() {
+                    this.setupIntersectionObserver();
+                },
+                
+                setupIntersectionObserver() {
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting && !this.isLoading) {
+                                this.loadMore();
+                            }
+                        });
+                    }, {
+                        rootMargin: '100px 0px', // Trigger 100px before the element is visible
+                        threshold: 0.1
+                    });
+                    
+                    this.observer.observe(this.$refs.sentinel);
+                },
+                
+                loadMore() {
+                    if (this.isLoading) return;
+                    
+                    this.isLoading = true;
+                    
+                    // Call Livewire loadMore method
+                    this.$wire.call('loadMore').then(() => {
+                        this.isLoading = false;
+                    }).catch(() => {
+                        this.isLoading = false;
+                    });
+                }
+            }));
+        });
     </script>
 </div>

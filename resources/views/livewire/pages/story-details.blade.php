@@ -258,6 +258,72 @@ new #[Layout('components.layouts.app')] class extends Component {
         return $anonymousService->hasVotedOn('story', $storyId);
     }
 
+    public function getRelatedStoriesProperty()
+    {
+        $relatedStories = collect();
+        $currentStoryId = $this->story->id;
+
+        // Priority 1: Same theme (if story has a theme)
+        if ($this->story->theme_id) {
+            $themeStories = Story::with(['tags', 'theme'])
+                ->where('status', 'published')
+                ->where('theme_id', $this->story->theme_id)
+                ->where('id', '!=', $currentStoryId)
+                ->orderByRaw('(upvotes - downvotes) DESC')
+                ->take(6)
+                ->get();
+            
+            $relatedStories = $relatedStories->merge($themeStories);
+        }
+
+        // Priority 2: Same category (if we need more stories)
+        if ($relatedStories->count() < 6 && $this->story->category) {
+            $categoryStories = Story::with(['tags', 'theme'])
+                ->where('status', 'published')
+                ->where('category', $this->story->category)
+                ->where('id', '!=', $currentStoryId)
+                ->whereNotIn('id', $relatedStories->pluck('id')->toArray())
+                ->orderByRaw('(upvotes - downvotes) DESC')
+                ->take(6 - $relatedStories->count())
+                ->get();
+            
+            $relatedStories = $relatedStories->merge($categoryStories);
+        }
+
+        // Priority 3: Same tags (if we need more stories)
+        if ($relatedStories->count() < 6 && $this->story->tags->isNotEmpty()) {
+            $tagIds = $this->story->tags->pluck('id')->toArray();
+            
+            $tagStories = Story::with(['tags', 'theme'])
+                ->where('status', 'published')
+                ->where('id', '!=', $currentStoryId)
+                ->whereNotIn('id', $relatedStories->pluck('id')->toArray())
+                ->whereHas('tags', function ($query) use ($tagIds) {
+                    $query->whereIn('tags.id', $tagIds);
+                })
+                ->orderByRaw('(upvotes - downvotes) DESC')
+                ->take(6 - $relatedStories->count())
+                ->get();
+            
+            $relatedStories = $relatedStories->merge($tagStories);
+        }
+
+        // If still need more stories, fill with random popular stories
+        if ($relatedStories->count() < 6) {
+            $randomStories = Story::with(['tags', 'theme'])
+                ->where('status', 'published')
+                ->where('id', '!=', $currentStoryId)
+                ->whereNotIn('id', $relatedStories->pluck('id')->toArray())
+                ->orderByRaw('(upvotes - downvotes) DESC')
+                ->take(6 - $relatedStories->count())
+                ->get();
+            
+            $relatedStories = $relatedStories->merge($randomStories);
+        }
+
+        return $relatedStories->take(6);
+    }
+
     private function formatTextToParagraphs($text)
     {
         // Clean the text
@@ -562,39 +628,86 @@ new #[Layout('components.layouts.app')] class extends Component {
         </div>
 
         <!-- Related Stories -->
-        <div class="max-w-3xl mx-auto px-4 md:px-6 py-8 border-t border-gray-100">
-            <h3 class="text-lg font-medium mb-5">More posts like this</h3>
+        @if($this->relatedStories->isNotEmpty())
+            <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 border-t border-gray-100">
+                <h3 class="text-base md:text-lg font-medium mb-4 md:mb-5">More posts like this</h3>
 
-            <div class="space-y-3">
-                <!-- Related Story 1 -->
-                <a href="/post/another-story"
-                    class="block p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-medium text-gray-700">@nightthoughts</span>
-                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">CONFESSION</span>
-                    </div>
-                    <h4 class="text-sm font-medium text-gray-900 mb-2">I've been eating lunch alone in my car for six
-                        months
-                    </h4>
-                    <p class="text-xs text-gray-600 line-clamp-2">Started a new job six months ago and still haven't
-                        made a single friend...</p>
-                </a>
+                <div class="space-y-3 md:space-y-4">
+                    @foreach($this->relatedStories as $relatedStory)
+                        <a href="{{ route('post', $relatedStory->slug) }}"
+                            class="related-story-card block p-3 md:p-4 border border-gray-200 rounded-lg hover:shadow-md active:shadow-sm transition-shadow bg-white">
+                            
+                            <!-- Mobile-first header with stacked layout -->
+                            <div class="space-y-2 md:space-y-0">
+                                <!-- Top row: Author and category -->
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-medium text-gray-700">{{ '@' . $relatedStory->alias }}</span>
+                                    @if($relatedStory->category)
+                                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">{{ strtoupper($relatedStory->category) }}</span>
+                                    @endif
+                                </div>
+                                
+                                <!-- Theme badge on separate line for mobile -->
+                                @if($relatedStory->theme)
+                                    <div class="flex items-start">
+                                        <span class="inline-flex items-center text-xs bg-black text-white px-3 py-1 rounded-full">
+                                            <span class="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                            {{ Str::limit($relatedStory->theme->name, 30) }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
 
-                <!-- Related Story 2 -->
-                <a href="/post/family-expectations"
-                    class="block p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-medium text-gray-700">@strugglingstudent</span>
-                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">RANT</span>
-                    </div>
-                    <h4 class="text-sm font-medium text-gray-900 mb-2">My parents think I'm thriving in college but I'm
-                        barely
-                        surviving</h4>
-                    <p class="text-xs text-gray-600 line-clamp-2">They're so proud of their first-generation college
-                        student, but I'm failing half my classes...</p>
-                </a>
+                            <!-- Title with mobile-optimized sizing -->
+                            <h4 class="text-sm md:text-base font-medium text-gray-900 mt-3 mb-2 leading-tight line-clamp-2">
+                                {{ $relatedStory->title }}
+                            </h4>
+                            
+                            <!-- Description with mobile-friendly text -->
+                            <p class="text-xs md:text-sm text-gray-600 line-clamp-2 leading-relaxed mb-3">
+                                {{ Str::limit(strip_tags($relatedStory->body), 100) }}
+                            </p>
+                            
+                            <!-- Bottom section with improved mobile layout -->
+                            <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between pt-2 border-t border-gray-100">
+                                <!-- Tags row -->
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    @if($relatedStory->tags->isNotEmpty())
+                                        @foreach($relatedStory->tags->take(2) as $tag)
+                                            <span class="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">#{{ $tag->name }}</span>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                
+                                <!-- Stats with larger touch targets -->
+                                <div class="flex items-center gap-3 md:gap-4">
+                                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                                        <span class="text-green-600">↑</span>
+                                        <span class="font-medium">{{ $relatedStory->upvotes }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                                        <span>💬</span>
+                                        <span>{{ $relatedStory->comments->count() }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                                        <span>👁</span>
+                                        <span>{{ number_format($relatedStory->views) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+                
+                <!-- Show all button for mobile -->
+                <div class="mt-4 md:mt-6 text-center">
+                    <a href="{{ route('feed') }}" 
+                        class="inline-flex items-center text-sm text-gray-600 hover:text-black transition-colors px-4 py-2 rounded-lg hover:bg-gray-50">
+                        See more stories →
+                    </a>
+                </div>
             </div>
-        </div>
+        @endif
     </article>
 
     <!-- Share Modal -->
@@ -754,6 +867,35 @@ new #[Layout('components.layouts.app')] class extends Component {
             border-left: 4px solid #e5e7eb;
             font-style: italic;
             color: #6b7280;
+        }
+
+        /* Mobile optimizations for related stories */
+        @media (max-width: 768px) {
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            
+            /* Better touch targets on mobile */
+            .related-story-card {
+                min-height: 44px; /* iOS recommended minimum touch target */
+            }
+            
+            /* Enhanced active states for mobile */
+            .related-story-card:active {
+                transform: scale(0.98);
+                transition: transform 0.1s ease;
+            }
+        }
+
+        /* Line clamp utilities for all screen sizes */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 

@@ -125,13 +125,19 @@ new #[Layout('layouts.app')] class extends Component {
 
     private function generateUniqueSlug($title)
     {
-        $slug = Str::slug($title);
-        $originalSlug = $slug;
-        $counter = 1;
-
+        $baseSlug = Str::slug($title);
+        
+        // Get the next incremental ID based on total published stories count + 1
+        $nextId = Story::where('status', 'published')->count() + 1;
+        
+        // Always append the incremental ID to ensure uniqueness
+        $slug = $baseSlug . '-' . $nextId;
+        
+        // Double-check for uniqueness (in case of race conditions)
+        $counter = $nextId;
         while (Story::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter;
             $counter++;
+            $slug = $baseSlug . '-' . $counter;
         }
 
         return $slug;
