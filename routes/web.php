@@ -44,7 +44,16 @@ Route::get('/health', function () {
 
 Volt::route('/posts', 'pages.stories')->name('feed');
 Volt::route('/post/create', 'pages.create-post')->name('post.create');
-Volt::route('/post/{slug}', 'pages.story-details')->name('post');
+
+// Story details route with Open Graph support
+Route::get('/post/{slug}', function ($slug) {
+    $story = \App\Models\Story::with(['tags', 'comments.replies'])
+        ->where('slug', $slug)
+        ->where('status', 'published')
+        ->firstOrFail();
+
+    return view('story-details', compact('story'));
+})->name('post');
 
 // Trending route - redirect to stories with trending filter
 Route::get('/trending', function () {

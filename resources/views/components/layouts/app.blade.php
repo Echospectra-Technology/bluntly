@@ -29,7 +29,10 @@
 </head>
 
 <body class="bg-white text-black font-sans antialiased">
-    @yield('content')
+    {{ $slot }}
+    
+    <!-- Toast Notifications -->
+    <x-toast />
 </body>
 
 </html>
