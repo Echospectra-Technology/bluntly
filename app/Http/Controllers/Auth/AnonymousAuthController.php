@@ -110,7 +110,7 @@ class AnonymousAuthController extends Controller
         $this->accountService->logout();
         
         return redirect()
-            ->route('stories')
+            ->route('feed')
             ->with('success', 'You have been logged out.');
     }
 
