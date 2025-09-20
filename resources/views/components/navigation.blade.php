@@ -79,8 +79,8 @@
                     </div>
                 </div>
             @else
-                <!-- Login/Signup Buttons -->
-                <div class="flex items-center space-x-3">
+                <!-- Login/Signup Buttons (Hidden on mobile since they're in mobile menu) -->
+                <div class="hidden md:flex items-center space-x-3">
                     <a href="{{ route('auth.login') }}"
                         class="text-sm text-gray-600 hover:text-black transition-colors">
                         Sign In
