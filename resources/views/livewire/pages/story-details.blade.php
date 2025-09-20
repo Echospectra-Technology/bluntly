@@ -366,8 +366,8 @@ new #[Layout('components.layouts.app')] class extends Component {
         <!-- Story Header -->
         <header class="max-w-3xl mx-auto px-4 md:px-6 pt-6 pb-3">
             <!-- Story Meta -->
-            <div class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between mb-4">
-                <div class="flex items-center flex-wrap gap-2 md:gap-3">
+            <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between mb-3">
+                <div class="flex items-center flex-wrap gap-2">
                     <span class="text-xs font-medium text-gray-700">{{ '@' . $story->alias }}</span>
                     <span class="text-gray-300 hidden md:inline">•</span>
                     <span class="text-xs text-gray-500">{{ $story->created_at->diffForHumans() }}</span>
@@ -409,7 +409,7 @@ new #[Layout('components.layouts.app')] class extends Component {
             </div>
 
             <!-- Story Title -->
-            <h1 class="text-xl md:text-2xl lg:text-3xl font-medium leading-tight text-gray-900">
+            <h1 class="text-lg md:text-xl lg:text-2xl font-medium leading-tight text-gray-900">
                 {{ $story->title }}
             </h1>
         </header>
@@ -417,15 +417,15 @@ new #[Layout('components.layouts.app')] class extends Component {
         <!-- Story Body -->
         <div class="max-w-3xl mx-auto px-4 md:px-6">
             <div class="prose max-w-none">
-                <div class="text-base leading-relaxed text-gray-700 mb-6 story-content">
+                <div class="text-sm leading-snug text-gray-700 mb-4 story-content compact-text">
                     {!! $story->body !!}
                 </div>
             </div>
         </div>
 
         <!-- Story Engagement -->
-        <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 border-t border-gray-100">
-            <div class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+        <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 border-t border-gray-100">
+            <div class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between">
                 <!-- Voting -->
                 <div class="flex items-center space-x-4 md:space-x-6">
                     <div class="flex items-center gap-2">
@@ -466,15 +466,15 @@ new #[Layout('components.layouts.app')] class extends Component {
         </div>
 
         <!-- Comments Section -->
-        <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 border-t border-gray-100">
-            <h3 class="text-lg font-medium mb-5">Comments</h3>
+        <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 border-t border-gray-100">
+            <h3 class="text-base font-medium mb-4">Comments</h3>
 
             <!-- Add Comment -->
-            <div class="mb-6">
+            <div class="mb-4">
                 <textarea wire:model="newComment" placeholder="Share your thoughts anonymously..." rows="3"
-                    class="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm">
+                    class="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-xs">
                 </textarea>
-                <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:justify-between md:items-center mt-3">
+                <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:justify-between md:items-center mt-2">
                     <span class="text-xs text-gray-500">Your comment will be posted anonymously</span>
                     <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment"
                         class="bg-black text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-gray-800 transition-colors self-start md:self-auto disabled:opacity-50 disabled:cursor-not-allowed">
@@ -495,19 +495,19 @@ new #[Layout('components.layouts.app')] class extends Component {
             </div>
 
             <!-- Comments List -->
-            <div class="space-y-8">
+            <div class="space-y-6">
                 @forelse ($this->comments as $comment)
                     <div class="comment-thread">
                         <div class="flex space-x-3">
                             <!-- Avatar placeholder -->
                             <div
-                                class="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-600">
+                                class="flex-shrink-0 w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-600">
                                 {{ strtoupper(substr($comment->alias, 0, 1)) }}
                             </div>
 
                             <div class="flex-1 min-w-0">
-                                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                                    <div class="flex items-center justify-between mb-2">
+                                <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                    <div class="flex items-center justify-between mb-1">
                                         <div class="flex items-center space-x-2">
                                             <span class="text-xs font-medium text-gray-700">@
                                                 {{ $comment->alias }}</span>
@@ -522,7 +522,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                                                 class="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded-full hover:bg-red-50 transition-colors">↓</button>
                                         </div>
                                     </div>
-                                    <div class="text-sm text-gray-700 leading-relaxed mb-2 comment-content">
+                                    <div class="text-xs text-gray-700 leading-snug mb-2 comment-content compact-text">
                                         {!! $comment->body !!}
                                     </div>
                                     <button wire:click="startReply({{ $comment->id }})"
@@ -629,8 +629,8 @@ new #[Layout('components.layouts.app')] class extends Component {
 
         <!-- Related Stories -->
         @if ($this->relatedStories->isNotEmpty())
-            <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 border-t border-gray-100">
-                <h3 class="text-base md:text-lg font-medium mb-4 md:mb-5">More posts like this</h3>
+            <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 md:py-6 border-t border-gray-100">
+                <h3 class="text-sm md:text-base font-medium mb-3 md:mb-4">More posts like this</h3>
 
                 <div class="space-y-3 md:space-y-4">
                     @foreach ($this->relatedStories as $relatedStory)

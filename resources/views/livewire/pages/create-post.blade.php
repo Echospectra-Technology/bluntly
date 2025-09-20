@@ -215,15 +215,15 @@ new #[Layout('layouts.app')] class extends Component {
 
     <div class="bg-white min-h-screen">
         <!-- Header -->
-        <div class="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div class="max-w-4xl mx-auto px-4 md:px-6 py-4 md:py-6">
             <div
-                class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between mb-6 md:mb-8">
+                class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between mb-4 md:mb-6">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-medium text-gray-900">What's on your mind?</h1>
-                    <p class="text-sm text-gray-600 mt-1">Your voice matters. Post anonymously and be heard.</p>
+                    <h1 class="text-lg md:text-xl font-medium text-gray-900">What's on your mind?</h1>
+                    <p class="text-xs text-gray-600 mt-1">Your voice matters. Post anonymously and be heard.</p>
                 </div>
                 <a href="{{ route('feed') }}"
-                    class="text-sm text-gray-500 hover:text-black transition-colors self-start md:self-auto">
+                    class="text-xs text-gray-500 hover:text-black transition-colors self-start md:self-auto">
                     ← Back to Stories
                 </a>
             </div>
@@ -252,14 +252,14 @@ new #[Layout('layouts.app')] class extends Component {
             @endif
 
             <!-- Form -->
-            <form wire:submit="publish" class="space-y-5 md:space-y-6">
+            <form wire:submit="publish" class="space-y-4 md:space-y-5">
                 <!-- Anonymous Handle -->
-                <div class="bg-gray-50 p-3 md:p-4 rounded-lg">
-                    <div class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <label class="text-sm font-medium text-gray-700">Posting as</label>
+                            <label class="text-xs font-medium text-gray-700">Posting as</label>
                             <div class="flex items-center gap-2 mt-1">
-                                <span class="text-sm md:text-base font-medium text-gray-900">@
+                                <span class="text-xs md:text-sm font-medium text-gray-900">@
                                     {{ $anonymous_handle }}</span>
                                 <button type="button" wire:click="generateNewHandle"
                                     class="text-xs text-gray-500 hover:text-black transition-colors">
@@ -275,22 +275,22 @@ new #[Layout('layouts.app')] class extends Component {
 
                 <!-- Category Selection -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <label class="block text-xs font-medium text-gray-700 mb-2">Category</label>
                     <div class="flex flex-wrap gap-2">
                         <button type="button" wire:click="$set('category', 'confession')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $category === 'confession' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                            class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors {{ $category === 'confession' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             Confession
                         </button>
                         <button type="button" wire:click="$set('category', 'rant')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $category === 'rant' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                            class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors {{ $category === 'rant' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             Rant
                         </button>
                         <button type="button" wire:click="$set('category', 'gist')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $category === 'gist' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                            class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors {{ $category === 'gist' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             Gist
                         </button>
                         <button type="button" wire:click="$set('category', 'story')"
-                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $category === 'story' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                            class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors {{ $category === 'story' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             Story
                         </button>
                     </div>
@@ -299,7 +299,7 @@ new #[Layout('layouts.app')] class extends Component {
                 <!-- Weekly Theme Selection -->
                 @if (count($availableThemes) > 0)
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-xs font-medium text-gray-700 mb-2">
                             Weekly Theme (Optional)
                         </label>
 
@@ -308,8 +308,8 @@ new #[Layout('layouts.app')] class extends Component {
                                 wire:click="$set('selectedTheme', {{ $selectedTheme == $theme->id ? 'null' : $theme->id }})">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <h3 class="font-medium text-gray-900">{{ $theme->name }}</h3>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h3 class="text-sm font-medium text-gray-900">{{ $theme->name }}</h3>
                                             @if ($theme->status === 'active')
                                                 <span
                                                     class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Active</span>
@@ -318,7 +318,7 @@ new #[Layout('layouts.app')] class extends Component {
                                                     class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Upcoming</span>
                                             @endif
                                         </div>
-                                        <p class="text-sm text-gray-600 mb-2">{{ $theme->description }}</p>
+                                        <p class="text-xs text-gray-600 mb-1">{{ $theme->description }}</p>
                                         @if ($theme->prompt_text)
                                             <p class="text-xs text-gray-500 italic">"{{ $theme->prompt_text }}"</p>
                                         @endif
@@ -343,10 +343,10 @@ new #[Layout('layouts.app')] class extends Component {
 
                 <!-- Title -->
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                    <label for="title" class="block text-xs font-medium text-gray-700 mb-2">Title</label>
                     <input type="text" id="title" wire:model="title"
                         placeholder="Give your post a compelling title..."
-                        class="w-full text-lg md:text-xl font-medium border-0 border-b border-gray-200 focus:border-black focus:ring-0 focus:outline-none bg-transparent placeholder-gray-400 pb-2"
+                        class="w-full text-base md:text-lg font-medium border-0 border-b border-gray-200 focus:border-black focus:ring-0 focus:outline-none bg-transparent placeholder-gray-400 pb-2"
                         maxlength="120">
                     <div
                         class="flex flex-col space-y-1 md:space-y-0 md:flex-row md:justify-between md:items-center mt-2">
@@ -358,7 +358,7 @@ new #[Layout('layouts.app')] class extends Component {
 
                 <!-- Tags -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tags (Optional)</label>
+                    <label class="block text-xs font-medium text-gray-700 mb-2">Tags (Optional)</label>
 
                     <!-- Selected Tags -->
                     @if (count($tags) > 0)
@@ -415,7 +415,7 @@ new #[Layout('layouts.app')] class extends Component {
 
                 <!-- Content Editor -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Your Post</label>
+                    <label class="block text-xs font-medium text-gray-700 mb-2">Your Post</label>
                     <div wire:ignore class="editor-wrapper">
                         <!-- Custom Toolbar -->
                         <div id="toolbar-container" class="editor-toolbar">
@@ -477,8 +477,8 @@ new #[Layout('layouts.app')] class extends Component {
                 </div>
 
                 <!-- Guidelines -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4">
-                    <h3 class="text-sm font-medium text-blue-900 mb-2">Before you post</h3>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <h3 class="text-xs font-medium text-blue-900 mb-2">Before you post</h3>
                     <ul class="text-xs text-blue-800 space-y-1">
                         <li>• Keep it authentic and respectful</li>
                         <li>• No personal attacks or harassment</li>
@@ -489,20 +489,20 @@ new #[Layout('layouts.app')] class extends Component {
 
                 <!-- Actions -->
                 <div
-                    class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between pt-6 border-t border-gray-100">
+                    class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between pt-4 border-t border-gray-100">
                     <button type="button" wire:click="saveDraft" wire:loading.attr="disabled"
                         wire:target="saveDraft"
-                        class="text-sm text-gray-600 hover:text-black transition-colors self-start md:self-auto disabled:opacity-50">
+                        class="text-xs text-gray-600 hover:text-black transition-colors self-start md:self-auto disabled:opacity-50">
                         <span wire:loading.remove wire:target="saveDraft">Save Draft</span>
                         <span wire:loading wire:target="saveDraft">Saving...</span>
                     </button>
-                    <div class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:gap-3">
+                    <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:gap-3">
                         <a href="{{ route('feed') }}"
-                            class="px-6 py-2 text-sm font-medium text-gray-700 hover:text-black transition-colors text-center border border-gray-200 rounded-lg md:border-0">
+                            class="px-4 py-1.5 text-xs font-medium text-gray-700 hover:text-black transition-colors text-center border border-gray-200 rounded-lg md:border-0">
                             Cancel
                         </a>
                         <button type="submit" wire:loading.attr="disabled" wire:target="publish"
-                            class="bg-black text-white px-6 py-3 md:py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="bg-black text-white px-4 py-2 md:py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                             <span wire:loading.remove wire:target="publish">Publish Post</span>
                             <span wire:loading wire:target="publish" class="flex items-center gap-2">
                                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"

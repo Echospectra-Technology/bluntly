@@ -18,6 +18,8 @@ new #[Layout('layouts.app')] class extends Component {
     public $perPage = 10;
     public $storyIds = [];
     public $hasMorePages = true;
+    public $totalViewedToday = 0;
+    public $showProgressMarker = true;
 
     public function mount()
     {
@@ -29,6 +31,9 @@ new #[Layout('layouts.app')] class extends Component {
                 $this->selectedTheme = $theme->id;
             }
         }
+
+        // Initialize session tracking for progress
+        $this->totalViewedToday = session('stories_viewed_today', 0);
 
         // Load initial stories
         $this->loadInitialStories();
@@ -149,7 +154,12 @@ new #[Layout('layouts.app')] class extends Component {
         }
 
         // Fetch fresh models with relationships in the correct order
-        $stories = Story::with(['tags', 'comments', 'theme'])
+        $stories = Story::with(['tags', 'comments' => function($query) {
+            $query->whereNull('parent_id')
+                  ->where('status', 'published')
+                  ->orderByRaw('(upvotes - downvotes) DESC')
+                  ->limit(2);
+        }, 'theme'])
             ->whereIn('id', $this->storyIds)
             ->get()
             ->sortBy(function ($story) {
@@ -256,6 +266,10 @@ new #[Layout('layouts.app')] class extends Component {
                     // Append new story IDs to existing collection
                     $newIds = $newStories->pluck('id')->toArray();
                     $this->storyIds = array_merge($this->storyIds, $newIds);
+
+                    // Update viewed count
+                    $this->totalViewedToday += $newStories->count();
+                    session(['stories_viewed_today' => $this->totalViewedToday]);
 
                     // Check if there are more pages
                     $this->hasMorePages = $newStories->count() === $this->perPage;
@@ -436,20 +450,39 @@ new #[Layout('layouts.app')] class extends Component {
         @endif
 
         <!-- Main Content Grid -->
-        <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 py-2 md:py-3">
             <div class="grid lg:grid-cols-3 lg:gap-8">
                 <!-- Stories Feed -->
                 <div class="lg:col-span-2">
-                    <div class="space-y-4 md:space-y-6">
-                        @forelse ($this->stories as $story)
-                            <article class="border-b border-gray-100 pb-4 md:pb-6 last:border-b-0">
+                    <div class="space-y-1 md:space-y-2">
+                        @forelse ($this->stories as $index => $story)
+                            <!-- Progress marker every 10 posts -->
+                            @if($index > 0 && $index % 10 === 0 && $showProgressMarker)
+                                <div class="flex items-center justify-center py-3 my-2">
+                                    <div class="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded-full px-4 py-2 shadow-sm">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                            <span class="text-xs text-gray-600 font-medium">
+                                                Story {{ $index + $totalViewedToday }} of {{ $index + $totalViewedToday + 20 }} today
+                                            </span>
+                                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+                                        </div>
+                                        <div class="text-center mt-1">
+                                            <span class="text-[10px] text-gray-500">Keep scrolling for more →</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <article class="border-b border-gray-50 pb-2 md:pb-3 last:border-b-0 hover:bg-gray-50/50 transition-colors duration-200 
+                                {{ $index % 2 === 1 ? 'bg-gray-50/20' : 'bg-white' }} px-2 md:px-3 py-2 rounded-sm">
                                 <!-- Mobile-first metadata layout -->
-                                <div class="mb-4 space-y-2">
+                                <div class="mb-2 space-y-1">
                                     <!-- Main metadata line -->
-                                    <div class="flex items-center text-sm">
-                                        <span class="font-medium text-gray-700">{{ '@' . $story->alias }}</span>
+                                    <div class="flex items-center text-xs">
+                                        <span class="font-medium text-gray-700 text-xs">{{ '@' . $story->alias }}</span>
                                         <span class="mx-2 text-gray-300">•</span>
-                                        <span class="text-gray-500">{{ $story->created_at->diffForHumans() }}</span>
+                                        <span class="text-gray-500 text-xs">{{ $story->created_at->diffForHumans() }}</span>
                                         @if ($story->category)
                                             <span class="mx-2 text-gray-300">•</span>
                                             <span
@@ -473,18 +506,27 @@ new #[Layout('layouts.app')] class extends Component {
 
                                 <a href="{{ route('post', $story->slug) }}" class="block">
                                     <h2
-                                        class="text-base md:text-lg lg:text-xl font-medium mb-2 leading-tight hover:text-gray-700 cursor-pointer transition-colors">
+                                        class="text-sm md:text-base lg:text-lg font-medium mb-1 leading-tight hover:text-gray-700 cursor-pointer transition-colors">
                                         {{ $story->title }}
                                     </h2>
                                 </a>
 
-                                <p class="text-xs md:text-sm text-gray-600 leading-relaxed mb-3">
-                                    {{ Str::limit(strip_tags($story->body), 250) }}
-                                </p>
+                                <div class="text-xs text-gray-600 leading-snug mb-2">
+                                    @php
+                                        $preview = Str::limit(strip_tags($story->body), 150);
+                                        $isLimited = strlen(strip_tags($story->body)) > 150;
+                                    @endphp
+                                    <div class="line-clamp-3">
+                                        {{ $preview }}
+                                        @if($isLimited)
+                                            <a href="{{ route('post', $story->slug) }}" class="text-gray-800 hover:text-black font-medium transition-colors">...Read more</a>
+                                        @endif
+                                    </div>
+                                </div>
 
                                 <!-- Tags -->
                                 @if ($story->tags->isNotEmpty())
-                                    <div class="flex flex-wrap gap-2 mb-4">
+                                    <div class="flex flex-wrap gap-1 mb-2">
                                         @foreach ($story->tags->take(3) as $tag)
                                             <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
                                                 #{{ $tag->name }}
@@ -493,26 +535,26 @@ new #[Layout('layouts.app')] class extends Component {
                                     </div>
                                 @endif
 
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-4 md:space-x-6 text-sm text-gray-500">
+                                <div class="flex items-center justify-between group">
+                                    <div class="flex items-center space-x-3 md:space-x-4 text-xs text-gray-500">
                                         <div class="flex items-center gap-1">
                                             <button wire:click="toggleVote({{ $story->id }}, 'up')"
-                                                class="hover:text-green-600 transition-colors p-1 {{ $this->getUserVote($story->id) === 'up' ? 'text-green-600' : '' }}">
+                                                class="hover:text-green-600 hover:bg-green-50 transition-all duration-200 p-1.5 rounded-full {{ $this->getUserVote($story->id) === 'up' ? 'text-green-600 bg-green-50' : '' }}">
                                                 ↑
                                             </button>
                                             <span
                                                 class="text-xs font-medium min-w-[1rem] text-center">{{ $story->upvotes }}</span>
                                             <button wire:click="toggleVote({{ $story->id }}, 'down')"
-                                                class="hover:text-red-600 transition-colors p-1 {{ $this->getUserVote($story->id) === 'down' ? 'text-red-600' : '' }}">
+                                                class="hover:text-red-600 hover:bg-red-50 transition-all duration-200 p-1.5 rounded-full {{ $this->getUserVote($story->id) === 'down' ? 'text-red-600 bg-red-50' : '' }}">
                                                 ↓
                                             </button>
                                         </div>
-                                        <span class="flex items-center gap-1">
+                                        <a href="{{ route('post', $story->slug) }}#comments" class="flex items-center gap-1 hover:text-gray-800 transition-colors">
                                             <span>💬</span>
                                             <span class="text-xs hidden sm:inline">{{ $story->comments->count() }}
                                                 comments</span>
                                             <span class="text-xs sm:hidden">{{ $story->comments->count() }}</span>
-                                        </span>
+                                        </a>
                                         <span class="flex items-center gap-1">
                                             <span>👁</span>
                                             <span class="text-xs hidden sm:inline">{{ number_format($story->views) }}
@@ -521,17 +563,62 @@ new #[Layout('layouts.app')] class extends Component {
                                         </span>
                                     </div>
 
+                                    <!-- Quick actions - visible on hover for desktop -->
+                                    <div class="hidden md:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')"
+                                            class="text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z">
+                                                </path>
+                                            </svg>
+                                            Share
+                                        </button>
+                                        <a href="{{ route('post', $story->slug) }}" class="text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100">
+                                            Read
+                                        </a>
+                                    </div>
+                                    <!-- Mobile share button -->
                                     <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')"
-                                        class="text-gray-500 hover:text-black transition-colors text-xs md:text-sm px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
-                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
+                                        class="md:hidden text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z">
                                             </path>
                                         </svg>
-                                        <span class="hidden sm:inline">Share</span>
                                     </button>
                                 </div>
+                                
+                                <!-- Inline Comments Preview -->
+                                @if($story->comments->count() > 0)
+                                    <div class="mt-2 pt-2 border-t border-gray-50">
+                                        <div class="space-y-1">
+                                            @foreach($story->comments->take(2) as $comment)
+                                                <div class="flex items-start gap-2 text-xs">
+                                                    <div class="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-[10px] text-gray-600 flex-shrink-0">
+                                                        {{ strtoupper(substr($comment->alias, 0, 1)) }}
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <span class="font-medium text-gray-700 text-[10px]">@{{ $comment->alias }}</span>
+                                                        <p class="text-gray-600 line-clamp-2 leading-tight">
+                                                            {{ Str::limit(strip_tags($comment->body), 80) }}
+                                                        </p>
+                                                    </div>
+                                                    @if($comment->upvotes > 0)
+                                                        <span class="text-[10px] text-green-600 flex items-center gap-0.5">
+                                                            ↑{{ $comment->upvotes }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                            @if($story->comments->count() > 2)
+                                                <a href="{{ route('post', $story->slug) }}#comments" class="text-[10px] text-gray-500 hover:text-gray-800 transition-colors">
+                                                    View {{ $story->comments->count() - 2 }} more comments →
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
                             </article>
                         @empty
                             <div class="text-center py-12">
@@ -542,19 +629,32 @@ new #[Layout('layouts.app')] class extends Component {
 
                     <!-- Infinite Scroll Loading -->
                     @if ($hasMorePages)
-                        <!-- Subtle loading indicator that only shows when loading -->
-                        <div class="flex justify-center py-6">
+                        <!-- Enhanced loading indicator with skeleton preview -->
+                        <div class="flex justify-center py-4">
                             <div wire:loading wire:target="loadMore"
-                                class="flex items-center space-x-2 text-gray-400">
-                                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10"
-                                        stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                <span class="text-xs">Loading more stories...</span>
+                                class="flex items-center space-x-2 text-gray-400 animate-pulse">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                </div>
+                                <span class="text-xs font-medium">Loading more stories...</span>
                             </div>
+                        </div>
+
+                        <!-- Skeleton loading preview -->
+                        <div wire:loading wire:target="loadMore" class="space-y-2">
+                            @for($i = 0; $i < 3; $i++)
+                                <div class="bg-gray-50/50 p-3 rounded-sm animate-pulse">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-4 h-4 bg-gray-200 rounded-full"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-20"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-16"></div>
+                                    </div>
+                                    <div class="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                                </div>
+                            @endfor
                         </div>
 
                         <!-- Infinite Scroll Trigger -->
@@ -563,29 +663,29 @@ new #[Layout('layouts.app')] class extends Component {
                 </div>
 
                 <!-- Right Sidebar -->
-                <div class="hidden lg:block space-y-6 sticky top-35 self-start">
+                <div class="hidden lg:block space-y-4 sticky top-35 self-start">
                     <!-- Top Stories -->
-                    <div class="bg-gray-50 p-5 rounded-lg">
-                        <h3 class="text-sm font-medium mb-3">Top Picks</h3>
-                        <div class="space-y-3">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-xs font-medium mb-2">Top Picks</h3>
+                        <div class="space-y-2">
                             @foreach ($this->topStories as $story)
-                                <article class="border-b border-gray-200 pb-3 last:border-b-0">
-                                    <div class="flex items-center gap-2 mb-2">
+                                <article class="border-b border-gray-200 pb-2 last:border-b-0">
+                                    <div class="flex items-center gap-2 mb-1">
                                         <span
                                             class="text-xs font-medium text-gray-700">{{ '@' . $story->alias }}</span>
                                         @if ($story->category)
-                                            <span class="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded">
+                                            <span class="text-[10px] text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
                                                 {{ $story->category }}
                                             </span>
                                         @endif
                                     </div>
                                     <a href="{{ route('post', $story->slug) }}">
                                         <h4
-                                            class="text-sm font-medium text-gray-900 mb-2 leading-tight hover:text-gray-700 transition-colors">
+                                            class="text-xs font-medium text-gray-900 mb-1 leading-tight hover:text-gray-700 transition-colors">
                                             {{ Str::limit($story->title, 60) }}
                                         </h4>
                                     </a>
-                                    <div class="flex items-center gap-3 text-xs text-gray-500">
+                                    <div class="flex items-center gap-2 text-[10px] text-gray-500">
                                         <span class="flex items-center gap-1">
                                             <span>↑</span>
                                             <span>{{ $story->upvotes }}</span>
@@ -601,25 +701,25 @@ new #[Layout('layouts.app')] class extends Component {
                     </div>
 
                     <!-- Featured/Ad Space -->
-                    <div class="bg-gradient-to-br from-gray-900 to-black p-5 rounded-lg text-white">
+                    <div class="bg-gradient-to-br from-gray-900 to-black p-4 rounded-lg text-white">
                         <div class="text-center">
-                            <h3 class="text-sm font-medium mb-2">Share Your Story</h3>
-                            <p class="text-xs text-gray-300 mb-4">Your voice matters. Post anonymously and connect with
+                            <h3 class="text-xs font-medium mb-2">Share Your Story</h3>
+                            <p class="text-[10px] text-gray-300 mb-3">Your voice matters. Post anonymously and connect with
                                 others who understand.</p>
                             <a href="/post/create"
-                                class="inline-block bg-white text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                                class="inline-block bg-white text-black px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors">
                                 Write Your Story
                             </a>
                         </div>
                     </div>
 
                     <!-- Trending Topics -->
-                    <div class="bg-gray-50 p-5 rounded-lg">
-                        <h3 class="text-sm font-medium mb-3">Trending Topics</h3>
-                        <div class="flex flex-wrap gap-2">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-xs font-medium mb-2">Trending Topics</h3>
+                        <div class="flex flex-wrap gap-1">
                             @foreach ($this->trendingTags as $tag)
                                 <button wire:click="setCategory('{{ $tag->slug }}')"
-                                    class="bg-white border border-gray-200 px-3 py-1.5 rounded-full text-xs text-gray-700 hover:border-gray-300 cursor-pointer transition-colors {{ $selectedCategory === $tag->slug ? 'bg-black text-white border-black' : '' }}">
+                                    class="bg-white border border-gray-200 px-2 py-1 rounded-full text-[10px] text-gray-700 hover:border-gray-300 cursor-pointer transition-colors {{ $selectedCategory === $tag->slug ? 'bg-black text-white border-black' : '' }}">
                                     #{{ $tag->name }}
                                 </button>
                             @endforeach
@@ -627,9 +727,9 @@ new #[Layout('layouts.app')] class extends Component {
                     </div>
 
                     <!-- Community Guidelines -->
-                    <div class="bg-gray-50 p-5 rounded-lg">
-                        <h3 class="text-sm font-medium mb-3">Community</h3>
-                        <div class="space-y-2 text-xs text-gray-600">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-xs font-medium mb-2">Community</h3>
+                        <div class="space-y-1 text-[10px] text-gray-600">
                             <a href="/rules" class="block hover:text-black transition-colors">Community
                                 Guidelines</a>
                             <a href="/about" class="block hover:text-black transition-colors">About
@@ -686,17 +786,17 @@ new #[Layout('layouts.app')] class extends Component {
                             }
                         });
                     }, {
-                        rootMargin: '100px 0px', // Reduced trigger distance for more controlled loading
-                        threshold: 0.1
+                        rootMargin: '300px 0px', // Increased trigger distance for faster doomscroll loading
+                        threshold: 0.05
                     });
 
                     this.observer.observe(this.$refs.sentinel);
                 },
 
                 canLoad() {
-                    // Prevent rapid successive loads - minimum 1 second between loads
+                    // Reduced delay for faster doomscroll experience - minimum 300ms between loads
                     const now = Date.now();
-                    return (now - this.lastLoadTime) > 1000;
+                    return (now - this.lastLoadTime) > 300;
                 },
 
                 loadMore() {
