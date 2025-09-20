@@ -18,6 +18,9 @@ class Comment extends Model
         'status',
         'upvotes',
         'downvotes',
+        'moderation_score',
+        'moderated_at',
+        'matched_rules',
     ];
 
     protected $casts = [
@@ -26,6 +29,9 @@ class Comment extends Model
         'status' => 'string',
         'upvotes' => 'integer',
         'downvotes' => 'integer',
+        'moderation_score' => 'integer',
+        'moderated_at' => 'datetime',
+        'matched_rules' => 'array',
     ];
 
     protected $attributes = [

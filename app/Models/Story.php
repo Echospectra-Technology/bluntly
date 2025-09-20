@@ -21,6 +21,9 @@ class Story extends Model
         'downvotes',
         'views',
         'theme_id',
+        'moderation_score',
+        'moderated_at',
+        'matched_rules',
     ];
 
     protected $casts = [
@@ -29,6 +32,9 @@ class Story extends Model
         'upvotes' => 'integer',
         'downvotes' => 'integer',
         'views' => 'integer',
+        'moderation_score' => 'integer',
+        'moderated_at' => 'datetime',
+        'matched_rules' => 'array',
     ];
 
     protected $attributes = [

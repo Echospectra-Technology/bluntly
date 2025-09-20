@@ -5,6 +5,7 @@ use Livewire\Attributes\Layout;
 use App\Models\Story;
 use App\Models\Tag;
 use App\Services\AnonymousUserService;
+use App\Services\ModerationEngine;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -68,20 +69,24 @@ new #[Layout('layouts.app')] class extends Component {
             $anonymousService = app(AnonymousUserService::class);
             $anonymousId = $anonymousService->getAnonymousId();
 
-            // Create the story
+            // Create the story first
             $story = Story::create([
                 'title' => $this->title,
                 'body' => $this->content,
                 'slug' => $this->generateUniqueSlug($this->title),
                 'alias' => $this->anonymous_handle,
                 'cookie_hash' => $anonymousId,
-                'status' => 'published',
+                'status' => 'published', // Will be updated by moderation
                 'category' => $this->category,
                 'theme_id' => $this->selectedTheme,
                 'upvotes' => 0,
                 'downvotes' => 0,
                 'views' => 0,
             ]);
+
+            // Run through moderation engine
+            $moderationEngine = app(ModerationEngine::class);
+            $moderationResult = $moderationEngine->moderateStory($story);
 
             // Handle tags
             if (!empty($this->tags)) {
@@ -96,10 +101,14 @@ new #[Layout('layouts.app')] class extends Component {
                 $story->tags()->attach($tagIds);
             }
 
+            // Show appropriate message based on moderation result
+            $message = $this->getModerationMessage($moderationResult);
+            
             $this->dispatch('toast-show', [
-                'message' => 'Your story has been published successfully!',
-                'type' => 'success',
+                'message' => $message,
+                'type' => $moderationResult['status'] === 'auto_blocked' ? 'warning' : 'success',
             ]);
+
             return redirect()->route('post', $story->slug);
         } catch (\Exception $e) {
             $this->dispatch('toast-show', [
@@ -183,6 +192,20 @@ new #[Layout('layouts.app')] class extends Component {
         // Clear any flash messages when user starts typing
         if (in_array($propertyName, ['title', 'content'])) {
             session()->forget(['success', 'error']);
+        }
+    }
+
+    private function getModerationMessage(array $moderationResult): string
+    {
+        switch ($moderationResult['status']) {
+            case 'safe':
+                return 'Your story has been published successfully!';
+            case 'review':
+                return 'Your story has been published and is under review. It may be hidden if it violates our guidelines.';
+            case 'auto_blocked':
+                return 'Your story has been published but is currently hidden pending review due to potential content issues. Please review our community guidelines.';
+            default:
+                return 'Your story has been published successfully!';
         }
     }
 }; ?>
