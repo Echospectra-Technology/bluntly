@@ -544,7 +544,7 @@ new #[Layout('layouts.app')] class extends Component {
                             }
                         });
                     }, {
-                        rootMargin: '100px 0px', // Trigger 100px before the element is visible
+                        rootMargin: '300px 0px', // Trigger 300px before the element is visible
                         threshold: 0.1
                     });
 
