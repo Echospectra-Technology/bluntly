@@ -6,6 +6,7 @@ use Livewire\WithPagination;
 use App\Models\Story;
 use App\Models\WeeklyTheme;
 use App\Models\Tag;
+use App\Models\Vote;
 use App\Services\AnonymousUserService;
 use App\Services\PersonalizedFeedService;
 
