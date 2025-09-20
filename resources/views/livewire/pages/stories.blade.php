@@ -8,11 +8,14 @@ use App\Models\Tag;
 use App\Services\AnonymousUserService;
 
 new #[Layout('layouts.app')] class extends Component {
-    use WithPagination;
-
     public $currentFilter = 'newest';
     public $selectedCategory = 'all';
     public $selectedTheme = null;
+    public $isLoadingMore = false;
+    public $currentPage = 1;
+    public $perPage = 10;
+    public $storyIds = [];
+    public $hasMorePages = true;
 
     public function mount()
     {
@@ -24,24 +27,45 @@ new #[Layout('layouts.app')] class extends Component {
                 $this->selectedTheme = $theme->id;
             }
         }
+        
+        // Load initial stories
+        $this->loadInitialStories();
+    }
+    
+    public function loadInitialStories()
+    {
+        $stories = $this->getStoriesQuery()
+            ->take($this->perPage)
+            ->get();
+            
+        $this->storyIds = $stories->pluck('id')->toArray();
+        $this->hasMorePages = $stories->count() === $this->perPage;
     }
 
     public function setFilter($filter)
     {
         $this->currentFilter = $filter;
-        $this->resetPage();
+        $this->resetStories();
     }
 
     public function setCategory($category)
     {
         $this->selectedCategory = $category;
-        $this->resetPage();
+        $this->resetStories();
+    }
+    
+    public function resetStories()
+    {
+        $this->currentPage = 1;
+        $this->storyIds = [];
+        $this->hasMorePages = true;
+        $this->loadInitialStories();
     }
 
     public function clearThemeFilter()
     {
         $this->selectedTheme = null;
-        $this->resetPage();
+        $this->resetStories();
     }
 
     public function getCurrentThemeProperty()
@@ -52,7 +76,7 @@ new #[Layout('layouts.app')] class extends Component {
         return null;
     }
 
-    public function getStoriesProperty()
+    public function getStoriesQuery()
     {
         $query = Story::with(['tags', 'comments', 'theme'])->where('status', 'published');
 
@@ -85,7 +109,24 @@ new #[Layout('layouts.app')] class extends Component {
                 break;
         }
 
-        return $query->paginate(10);
+        return $query;
+    }
+    
+    public function getStoriesProperty()
+    {
+        if (empty($this->storyIds)) {
+            return collect();
+        }
+        
+        // Fetch fresh models with relationships in the correct order
+        $stories = Story::with(['tags', 'comments', 'theme'])
+            ->whereIn('id', $this->storyIds)
+            ->get()
+            ->sortBy(function ($story) {
+                return array_search($story->id, $this->storyIds);
+            });
+            
+        return $stories;
     }
 
     public function getTrendingTagsProperty()
@@ -160,7 +201,33 @@ new #[Layout('layouts.app')] class extends Component {
 
     public function loadMore()
     {
-        $this->nextPage();
+        if ($this->isLoadingMore || !$this->hasMorePages) {
+            return;
+        }
+        
+        $this->isLoadingMore = true;
+        
+        try {
+            $this->currentPage++;
+            
+            $newStories = $this->getStoriesQuery()
+                ->skip(($this->currentPage - 1) * $this->perPage)
+                ->take($this->perPage)
+                ->get();
+            
+            if ($newStories->count() > 0) {
+                // Append new story IDs to existing collection
+                $newIds = $newStories->pluck('id')->toArray();
+                $this->storyIds = array_merge($this->storyIds, $newIds);
+                
+                // Check if there are more pages
+                $this->hasMorePages = $newStories->count() === $this->perPage;
+            } else {
+                $this->hasMorePages = false;
+            }
+        } finally {
+            $this->isLoadingMore = false;
+        }
     }
 }; ?>
 
@@ -402,18 +469,18 @@ new #[Layout('layouts.app')] class extends Component {
                     </div>
 
                     <!-- Infinite Scroll Loading -->
-                    @if ($this->stories->hasMorePages())
+                    @if ($hasMorePages)
                         <!-- Subtle loading indicator that only shows when loading -->
-                        <div wire:loading wire:target="loadMore" class="flex justify-center py-8">
-                            <div class="flex items-center space-x-2 text-gray-400">
-                                <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <div class="flex justify-center py-6">
+                            <div wire:loading wire:target="loadMore" class="flex items-center space-x-2 text-gray-400">
+                                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10"
                                         stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor"
                                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                     </path>
                                 </svg>
-                                <span class="text-sm">Loading...</span>
+                                <span class="text-xs">Loading more stories...</span>
                             </div>
                         </div>
 
@@ -531,6 +598,7 @@ new #[Layout('layouts.app')] class extends Component {
             Alpine.data('infiniteScroll', () => ({
                 observer: null,
                 isLoading: false,
+                lastLoadTime: 0,
 
                 init() {
                     this.setupIntersectionObserver();
@@ -539,26 +607,36 @@ new #[Layout('layouts.app')] class extends Component {
                 setupIntersectionObserver() {
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
-                            if (entry.isIntersecting && !this.isLoading) {
+                            if (entry.isIntersecting && !this.isLoading && this.canLoad()) {
                                 this.loadMore();
                             }
                         });
                     }, {
-                        rootMargin: '300px 0px', // Trigger 300px before the element is visible
+                        rootMargin: '100px 0px', // Reduced trigger distance for more controlled loading
                         threshold: 0.1
                     });
 
                     this.observer.observe(this.$refs.sentinel);
                 },
 
+                canLoad() {
+                    // Prevent rapid successive loads - minimum 1 second between loads
+                    const now = Date.now();
+                    return (now - this.lastLoadTime) > 1000;
+                },
+
                 loadMore() {
-                    if (this.isLoading) return;
+                    if (this.isLoading || !this.canLoad()) return;
 
                     this.isLoading = true;
+                    this.lastLoadTime = Date.now();
 
                     // Call Livewire loadMore method
                     this.$wire.call('loadMore').then(() => {
-                        this.isLoading = false;
+                        // Add a small delay to ensure smooth loading
+                        setTimeout(() => {
+                            this.isLoading = false;
+                        }, 500);
                     }).catch(() => {
                         this.isLoading = false;
                     });
