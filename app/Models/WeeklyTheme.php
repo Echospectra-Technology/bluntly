@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class WeeklyTheme extends Model
 {
@@ -22,9 +21,9 @@ class WeeklyTheme extends Model
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'is_active' => 'boolean',
+        'start_date'       => 'date',
+        'end_date'         => 'date',
+        'is_active'        => 'boolean',
         'submission_count' => 'integer',
     ];
 
@@ -42,7 +41,7 @@ class WeeklyTheme extends Model
     {
         $today = Carbon::today();
         return $query->where('start_date', '<=', $today)
-                    ->where('end_date', '>=', $today);
+            ->where('end_date', '>=', $today);
     }
 
     public function scopeUpcoming($query)
@@ -76,7 +75,7 @@ class WeeklyTheme extends Model
         if ($this->isPast()) {
             return 0;
         }
-        
+
         return Carbon::today()->diffInDays($this->end_date, false) + 1;
     }
 

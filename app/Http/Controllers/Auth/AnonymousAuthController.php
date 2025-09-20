@@ -19,7 +19,7 @@ class AnonymousAuthController extends Controller
     public function showSignupForm()
     {
         if ($this->accountService->isLoggedIn()) {
-            return redirect()->route('stories');
+            return redirect()->route('feed');
         }
 
         $suggestedUsername = $this->accountService->generateUsername();
@@ -30,7 +30,7 @@ class AnonymousAuthController extends Controller
     public function showLoginForm()
     {
         if ($this->accountService->isLoggedIn()) {
-            return redirect()->route('stories');
+            return redirect()->route('feed');
         }
 
         return view('auth.anonymous-login');
@@ -96,7 +96,7 @@ class AnonymousAuthController extends Controller
 
         if ($user) {
             return redirect()
-                ->intended(route('stories'))
+                ->intended(route('feed'))
                 ->with('success', "Welcome back @{$user->username}!");
         }
 

@@ -4,6 +4,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 use App\Models\Story;
+use App\Models\WeeklyTheme;
 use App\Models\Tag;
 use App\Services\AnonymousUserService;
 use App\Services\PersonalizedFeedService;
@@ -23,7 +24,7 @@ new #[Layout('layouts.app')] class extends Component {
         // Check for theme parameter in URL
         $themeSlug = request()->get('theme');
         if ($themeSlug) {
-            $theme = \App\Models\WeeklyTheme::where('slug', $themeSlug)->first();
+            $theme = WeeklyTheme::where('slug', $themeSlug)->first();
             if ($theme) {
                 $this->selectedTheme = $theme->id;
             }
@@ -100,7 +101,7 @@ new #[Layout('layouts.app')] class extends Component {
     public function getCurrentThemeProperty()
     {
         if ($this->selectedTheme) {
-            return \App\Models\WeeklyTheme::find($this->selectedTheme);
+            return WeeklyTheme::find($this->selectedTheme);
         }
         return null;
     }
@@ -185,7 +186,7 @@ new #[Layout('layouts.app')] class extends Component {
         $anonymousService = app(AnonymousUserService::class);
         $anonymousId = $anonymousService->getAnonymousId();
 
-        $existingVote = \App\Models\Vote::where('item_type', 'story')->where('item_id', $storyId)->where('cookie_hash', $anonymousId)->first();
+        $existingVote = Vote::where('item_type', 'story')->where('item_id', $storyId)->where('cookie_hash', $anonymousId)->first();
 
         if ($existingVote) {
             if ($existingVote->value === $voteType) {
@@ -201,7 +202,7 @@ new #[Layout('layouts.app')] class extends Component {
             }
         } else {
             // Create new vote
-            \App\Models\Vote::create([
+            Vote::create([
                 'item_type' => 'story',
                 'item_id' => $storyId,
                 'value' => $voteType,
@@ -216,9 +217,9 @@ new #[Layout('layouts.app')] class extends Component {
 
     private function updateStoryVoteCounts($storyId)
     {
-        $upvotes = \App\Models\Vote::where('item_type', 'story')->where('item_id', $storyId)->where('value', 'up')->count();
+        $upvotes = Vote::where('item_type', 'story')->where('item_id', $storyId)->where('value', 'up')->count();
 
-        $downvotes = \App\Models\Vote::where('item_type', 'story')->where('item_id', $storyId)->where('value', 'down')->count();
+        $downvotes = Vote::where('item_type', 'story')->where('item_id', $storyId)->where('value', 'down')->count();
 
         Story::where('id', $storyId)->update([
             'upvotes' => $upvotes,
@@ -387,7 +388,7 @@ new #[Layout('layouts.app')] class extends Component {
         <!-- Weekly Theme Banner for Feed -->
         @if (!$this->currentTheme)
             @php
-                $feedCurrentTheme = \App\Models\WeeklyTheme::current()->first();
+                $feedCurrentTheme = WeeklyTheme::current()->first();
             @endphp
             @if ($feedCurrentTheme)
                 <div class="bg-gray-50 border-b border-gray-100">

@@ -16,6 +16,8 @@
                     <a href="{{ route('feed') }}"
                         class="block text-sm text-gray-600 hover:text-black transition-colors">Read
                         Stories</a>
+                    <a href="{{ route('themes') }}"
+                        class="block text-sm text-gray-600 hover:text-black transition-colors">Weekly Themes</a>
                     <a href="{{ route('post.create') }}"
                         class="block text-sm text-gray-600 hover:text-black transition-colors">Post
                         Anonymously</a>

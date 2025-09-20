@@ -103,6 +103,19 @@ Route::get('/report', function () {
     return view('pages.report');
 })->name('report');
 
+// Anonymous Authentication routes
+Route::prefix('auth')->name('auth.')->group(function () {
+    Route::get('/signup', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'showSignupForm'])->name('signup');
+    Route::post('/signup', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'register'])->name('register');
+    Route::get('/login', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'logout'])->name('logout');
+    
+    // AJAX endpoints
+    Route::post('/check-username', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'checkUsername'])->name('check-username');
+    Route::post('/generate-username', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'generateUsername'])->name('generate-username');
+});
+
 // SEO routes
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/sitemap-pages.xml', [\App\Http\Controllers\SitemapController::class, 'pages'])->name('sitemap.pages');
