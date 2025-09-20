@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -23,7 +22,7 @@ class AnonymousAuthController extends Controller
         }
 
         $suggestedUsername = $this->accountService->generateUsername();
-        
+
         return view('auth.anonymous-signup', compact('suggestedUsername'));
     }
 
@@ -45,12 +44,12 @@ class AnonymousAuthController extends Controller
                 'min:3',
                 'max:20',
                 'regex:/^[a-zA-Z0-9_-]+$/',
-                'unique:anonymous_users,username'
+                'unique:anonymous_users,username',
             ],
             'password' => 'required|string|min:6|confirmed',
-            'email' => 'nullable|email|unique:anonymous_users,email',
+            'email'    => 'nullable|email|unique:anonymous_users,email',
         ], [
-            'username.regex' => 'Username can only contain letters, numbers, hyphens and underscores.',
+            'username.regex'  => 'Username can only contain letters, numbers, hyphens and underscores.',
             'username.unique' => 'This username is already taken.',
         ]);
 
@@ -71,9 +70,9 @@ class AnonymousAuthController extends Controller
             $this->accountService->login($request->username, $request->password);
 
             return redirect()
-                ->route('stories')
+                ->route('feed')
                 ->with('success', "Welcome @{$user->username}! Your anonymous account has been created. All your previous activity has been preserved.");
-                
+
         } catch (\Exception $e) {
             return back()
                 ->withErrors(['error' => 'Failed to create account. Please try again.'])
@@ -108,7 +107,7 @@ class AnonymousAuthController extends Controller
     public function logout()
     {
         $this->accountService->logout();
-        
+
         return redirect()
             ->route('feed')
             ->with('success', 'You have been logged out.');
@@ -117,8 +116,8 @@ class AnonymousAuthController extends Controller
     public function checkUsername(Request $request)
     {
         $username = $request->input('username');
-        
-        if (!$username) {
+
+        if (! $username) {
             return response()->json(['available' => false, 'message' => 'Username is required']);
         }
 
@@ -126,22 +125,22 @@ class AnonymousAuthController extends Controller
             return response()->json(['available' => false, 'message' => 'Username must be at least 3 characters']);
         }
 
-        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $username)) {
+        if (! preg_match('/^[a-zA-Z0-9_-]+$/', $username)) {
             return response()->json(['available' => false, 'message' => 'Username can only contain letters, numbers, hyphens and underscores']);
         }
 
         $available = $this->accountService->isUsernameAvailable($username);
-        
+
         return response()->json([
             'available' => $available,
-            'message' => $available ? 'Username is available!' : 'Username is already taken'
+            'message'   => $available ? 'Username is available!' : 'Username is already taken',
         ]);
     }
 
     public function generateUsername()
     {
         return response()->json([
-            'username' => $this->accountService->generateUsername()
+            'username' => $this->accountService->generateUsername(),
         ]);
     }
 }
