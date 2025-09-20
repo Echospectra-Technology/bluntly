@@ -232,7 +232,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function shareToSocial($platform)
     {
-        $url = url()->current();
+        $url = route('post', $this->story->slug);
         $title = $this->story->title;
         $text = urlencode($title . ' - Read this story on Bluntly');
 
@@ -272,7 +272,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 ->orderByRaw('(upvotes - downvotes) DESC')
                 ->take(6)
                 ->get();
-            
+
             $relatedStories = $relatedStories->merge($themeStories);
         }
 
@@ -286,14 +286,14 @@ new #[Layout('components.layouts.app')] class extends Component {
                 ->orderByRaw('(upvotes - downvotes) DESC')
                 ->take(6 - $relatedStories->count())
                 ->get();
-            
+
             $relatedStories = $relatedStories->merge($categoryStories);
         }
 
         // Priority 3: Same tags (if we need more stories)
         if ($relatedStories->count() < 6 && $this->story->tags->isNotEmpty()) {
             $tagIds = $this->story->tags->pluck('id')->toArray();
-            
+
             $tagStories = Story::with(['tags', 'theme'])
                 ->where('status', 'published')
                 ->where('id', '!=', $currentStoryId)
@@ -304,7 +304,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 ->orderByRaw('(upvotes - downvotes) DESC')
                 ->take(6 - $relatedStories->count())
                 ->get();
-            
+
             $relatedStories = $relatedStories->merge($tagStories);
         }
 
@@ -317,7 +317,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 ->orderByRaw('(upvotes - downvotes) DESC')
                 ->take(6 - $relatedStories->count())
                 ->get();
-            
+
             $relatedStories = $relatedStories->merge($randomStories);
         }
 
@@ -628,29 +628,32 @@ new #[Layout('components.layouts.app')] class extends Component {
         </div>
 
         <!-- Related Stories -->
-        @if($this->relatedStories->isNotEmpty())
+        @if ($this->relatedStories->isNotEmpty())
             <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 border-t border-gray-100">
                 <h3 class="text-base md:text-lg font-medium mb-4 md:mb-5">More posts like this</h3>
 
                 <div class="space-y-3 md:space-y-4">
-                    @foreach($this->relatedStories as $relatedStory)
+                    @foreach ($this->relatedStories as $relatedStory)
                         <a href="{{ route('post', $relatedStory->slug) }}"
                             class="related-story-card block p-3 md:p-4 border border-gray-200 rounded-lg hover:shadow-md active:shadow-sm transition-shadow bg-white">
-                            
+
                             <!-- Mobile-first header with stacked layout -->
                             <div class="space-y-2 md:space-y-0">
                                 <!-- Top row: Author and category -->
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-medium text-gray-700">{{ '@' . $relatedStory->alias }}</span>
-                                    @if($relatedStory->category)
-                                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">{{ strtoupper($relatedStory->category) }}</span>
+                                    <span
+                                        class="text-xs font-medium text-gray-700">{{ '@' . $relatedStory->alias }}</span>
+                                    @if ($relatedStory->category)
+                                        <span
+                                            class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">{{ strtoupper($relatedStory->category) }}</span>
                                     @endif
                                 </div>
-                                
+
                                 <!-- Theme badge on separate line for mobile -->
-                                @if($relatedStory->theme)
+                                @if ($relatedStory->theme)
                                     <div class="flex items-start">
-                                        <span class="inline-flex items-center text-xs bg-black text-white px-3 py-1 rounded-full">
+                                        <span
+                                            class="inline-flex items-center text-xs bg-black text-white px-3 py-1 rounded-full">
                                             <span class="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
                                             {{ Str::limit($relatedStory->theme->name, 30) }}
                                         </span>
@@ -659,26 +662,29 @@ new #[Layout('components.layouts.app')] class extends Component {
                             </div>
 
                             <!-- Title with mobile-optimized sizing -->
-                            <h4 class="text-sm md:text-base font-medium text-gray-900 mt-3 mb-2 leading-tight line-clamp-2">
+                            <h4
+                                class="text-sm md:text-base font-medium text-gray-900 mt-3 mb-2 leading-tight line-clamp-2">
                                 {{ $relatedStory->title }}
                             </h4>
-                            
+
                             <!-- Description with mobile-friendly text -->
                             <p class="text-xs md:text-sm text-gray-600 line-clamp-2 leading-relaxed mb-3">
                                 {{ Str::limit(strip_tags($relatedStory->body), 100) }}
                             </p>
-                            
+
                             <!-- Bottom section with improved mobile layout -->
-                            <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between pt-2 border-t border-gray-100">
+                            <div
+                                class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between pt-2 border-t border-gray-100">
                                 <!-- Tags row -->
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    @if($relatedStory->tags->isNotEmpty())
-                                        @foreach($relatedStory->tags->take(2) as $tag)
-                                            <span class="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">#{{ $tag->name }}</span>
+                                    @if ($relatedStory->tags->isNotEmpty())
+                                        @foreach ($relatedStory->tags->take(2) as $tag)
+                                            <span
+                                                class="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">#{{ $tag->name }}</span>
                                         @endforeach
                                     @endif
                                 </div>
-                                
+
                                 <!-- Stats with larger touch targets -->
                                 <div class="flex items-center gap-3 md:gap-4">
                                     <div class="flex items-center gap-1 text-xs text-gray-500">
@@ -698,10 +704,10 @@ new #[Layout('components.layouts.app')] class extends Component {
                         </a>
                     @endforeach
                 </div>
-                
+
                 <!-- Show all button for mobile -->
                 <div class="mt-4 md:mt-6 text-center">
-                    <a href="{{ route('feed') }}" 
+                    <a href="{{ route('feed') }}"
                         class="inline-flex items-center text-sm text-gray-600 hover:text-black transition-colors px-4 py-2 rounded-lg hover:bg-gray-50">
                         See more stories →
                     </a>
@@ -877,12 +883,13 @@ new #[Layout('components.layouts.app')] class extends Component {
                 -webkit-box-orient: vertical;
                 overflow: hidden;
             }
-            
+
             /* Better touch targets on mobile */
             .related-story-card {
-                min-height: 44px; /* iOS recommended minimum touch target */
+                min-height: 44px;
+                /* iOS recommended minimum touch target */
             }
-            
+
             /* Enhanced active states for mobile */
             .related-story-card:active {
                 transform: scale(0.98);
