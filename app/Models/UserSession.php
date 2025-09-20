@@ -8,6 +8,7 @@ class UserSession extends Model
 {
     protected $fillable = [
         'cookie_hash',
+        'anonymous_user_id',
         'country_code',
         'country_name',
         'state_code',
@@ -25,4 +26,17 @@ class UserSession extends Model
         'longitude' => 'float',
         'last_activity' => 'datetime',
     ];
+
+    public function anonymousUser()
+    {
+        return $this->belongsTo(AnonymousUser::class);
+    }
+
+    public function scopeForUser($query, $identifier)
+    {
+        if (is_numeric($identifier)) {
+            return $query->where('anonymous_user_id', $identifier);
+        }
+        return $query->where('cookie_hash', $identifier);
+    }
 }

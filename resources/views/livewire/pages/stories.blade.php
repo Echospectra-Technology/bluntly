@@ -28,20 +28,18 @@ new #[Layout('layouts.app')] class extends Component {
                 $this->selectedTheme = $theme->id;
             }
         }
-        
+
         // Load initial stories
         $this->loadInitialStories();
     }
-    
+
     public function loadInitialStories()
     {
         if ($this->currentFilter === 'personalized' || $this->currentFilter === 'newest') {
             $this->loadPersonalizedStories();
         } else {
-            $stories = $this->getStoriesQuery()
-                ->take($this->perPage)
-                ->get();
-                
+            $stories = $this->getStoriesQuery()->take($this->perPage)->get();
+
             $this->storyIds = $stories->pluck('id')->toArray();
             $this->hasMorePages = $stories->count() === $this->perPage;
         }
@@ -51,10 +49,10 @@ new #[Layout('layouts.app')] class extends Component {
     {
         $anonymousService = app(AnonymousUserService::class);
         $personalizedFeedService = app(PersonalizedFeedService::class);
-        
+
         $anonymousId = $anonymousService->getAnonymousId();
         $userLocation = $anonymousService->getUserLocation($anonymousId);
-        
+
         // Request more stories than perPage to check if there are more
         $stories = $personalizedFeedService->getPersonalizedFeed(
             $anonymousId,
@@ -62,12 +60,12 @@ new #[Layout('layouts.app')] class extends Component {
             $this->perPage + 1, // Request one extra to check for more
             [], // No exclude IDs for initial load
             $this->selectedCategory,
-            $this->selectedTheme
+            $this->selectedTheme,
         );
-        
+
         // Check if there are more stories available
         $this->hasMorePages = $stories->count() > $this->perPage;
-        
+
         // Take only the requested number of stories
         $actualStories = $stories->take($this->perPage);
         $this->storyIds = $actualStories->pluck('id')->toArray();
@@ -84,7 +82,7 @@ new #[Layout('layouts.app')] class extends Component {
         $this->selectedCategory = $category;
         $this->resetStories();
     }
-    
+
     public function resetStories()
     {
         $this->currentPage = 1;
@@ -142,13 +140,13 @@ new #[Layout('layouts.app')] class extends Component {
 
         return $query;
     }
-    
+
     public function getStoriesProperty()
     {
         if (empty($this->storyIds)) {
             return collect();
         }
-        
+
         // Fetch fresh models with relationships in the correct order
         $stories = Story::with(['tags', 'comments', 'theme'])
             ->whereIn('id', $this->storyIds)
@@ -156,7 +154,7 @@ new #[Layout('layouts.app')] class extends Component {
             ->sortBy(function ($story) {
                 return array_search($story->id, $this->storyIds);
             });
-            
+
         return $stories;
     }
 
@@ -239,12 +237,12 @@ new #[Layout('layouts.app')] class extends Component {
         if ($this->isLoadingMore || !$this->hasMorePages) {
             return;
         }
-        
+
         $this->isLoadingMore = true;
-        
+
         try {
             $this->currentPage++;
-            
+
             if ($this->currentFilter === 'personalized' || $this->currentFilter === 'newest') {
                 $this->loadMorePersonalizedStories();
             } else {
@@ -252,12 +250,12 @@ new #[Layout('layouts.app')] class extends Component {
                     ->skip(($this->currentPage - 1) * $this->perPage)
                     ->take($this->perPage)
                     ->get();
-                
+
                 if ($newStories->count() > 0) {
                     // Append new story IDs to existing collection
                     $newIds = $newStories->pluck('id')->toArray();
                     $this->storyIds = array_merge($this->storyIds, $newIds);
-                    
+
                     // Check if there are more pages
                     $this->hasMorePages = $newStories->count() === $this->perPage;
                 } else {
@@ -273,10 +271,10 @@ new #[Layout('layouts.app')] class extends Component {
     {
         $anonymousService = app(AnonymousUserService::class);
         $personalizedFeedService = app(PersonalizedFeedService::class);
-        
+
         $anonymousId = $anonymousService->getAnonymousId();
         $userLocation = $anonymousService->getUserLocation($anonymousId);
-        
+
         // Request more stories than perPage to check if there are more
         $newStories = $personalizedFeedService->getPersonalizedFeed(
             $anonymousId,
@@ -284,13 +282,13 @@ new #[Layout('layouts.app')] class extends Component {
             $this->perPage + 1, // Request one extra to check for more
             $this->storyIds, // Exclude already loaded stories
             $this->selectedCategory,
-            $this->selectedTheme
+            $this->selectedTheme,
         );
-        
+
         if ($newStories->count() > 0) {
             // Check if there are more stories available
             $this->hasMorePages = $newStories->count() > $this->perPage;
-            
+
             // Take only the requested number of stories
             $actualNewStories = $newStories->take($this->perPage);
             $newIds = $actualNewStories->pluck('id')->toArray();
@@ -427,7 +425,7 @@ new #[Layout('layouts.app')] class extends Component {
                                 </a>
                                 <a href="{{ route('feed') }}?theme={{ $feedCurrentTheme->slug }}"
                                     class="text-gray-600 text-xs md:text-sm font-medium hover:text-black transition-colors">
-                                    Filter by Theme →
+                                    Show Theme Posts →
                                 </a>
                             </div>
                         </div>
@@ -545,7 +543,8 @@ new #[Layout('layouts.app')] class extends Component {
                     @if ($hasMorePages)
                         <!-- Subtle loading indicator that only shows when loading -->
                         <div class="flex justify-center py-6">
-                            <div wire:loading wire:target="loadMore" class="flex items-center space-x-2 text-gray-400">
+                            <div wire:loading wire:target="loadMore"
+                                class="flex items-center space-x-2 text-gray-400">
                                 <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10"
                                         stroke="currentColor" stroke-width="4"></circle>
@@ -680,7 +679,8 @@ new #[Layout('layouts.app')] class extends Component {
                 setupIntersectionObserver() {
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
-                            if (entry.isIntersecting && !this.isLoading && this.canLoad()) {
+                            if (entry.isIntersecting && !this.isLoading && this
+                                .canLoad()) {
                                 this.loadMore();
                             }
                         });
