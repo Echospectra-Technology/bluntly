@@ -6,6 +6,7 @@ use Livewire\WithPagination;
 use App\Models\Story;
 use App\Models\Tag;
 use App\Services\AnonymousUserService;
+use App\Services\PersonalizedFeedService;
 
 new #[Layout('layouts.app')] class extends Component {
     public $currentFilter = 'newest';
@@ -34,12 +35,42 @@ new #[Layout('layouts.app')] class extends Component {
     
     public function loadInitialStories()
     {
-        $stories = $this->getStoriesQuery()
-            ->take($this->perPage)
-            ->get();
-            
-        $this->storyIds = $stories->pluck('id')->toArray();
-        $this->hasMorePages = $stories->count() === $this->perPage;
+        if ($this->currentFilter === 'personalized' || $this->currentFilter === 'newest') {
+            $this->loadPersonalizedStories();
+        } else {
+            $stories = $this->getStoriesQuery()
+                ->take($this->perPage)
+                ->get();
+                
+            $this->storyIds = $stories->pluck('id')->toArray();
+            $this->hasMorePages = $stories->count() === $this->perPage;
+        }
+    }
+
+    private function loadPersonalizedStories()
+    {
+        $anonymousService = app(AnonymousUserService::class);
+        $personalizedFeedService = app(PersonalizedFeedService::class);
+        
+        $anonymousId = $anonymousService->getAnonymousId();
+        $userLocation = $anonymousService->getUserLocation($anonymousId);
+        
+        // Request more stories than perPage to check if there are more
+        $stories = $personalizedFeedService->getPersonalizedFeed(
+            $anonymousId,
+            $userLocation,
+            $this->perPage + 1, // Request one extra to check for more
+            [], // No exclude IDs for initial load
+            $this->selectedCategory,
+            $this->selectedTheme
+        );
+        
+        // Check if there are more stories available
+        $this->hasMorePages = $stories->count() > $this->perPage;
+        
+        // Take only the requested number of stories
+        $actualStories = $stories->take($this->perPage);
+        $this->storyIds = $actualStories->pluck('id')->toArray();
     }
 
     public function setFilter($filter)
@@ -167,6 +198,8 @@ new #[Layout('layouts.app')] class extends Component {
                 // Change vote
                 $existingVote->update(['value' => $voteType]);
                 $this->updateStoryVoteCounts($storyId);
+                // Track the interaction for personalization
+                $anonymousService->trackInteraction($anonymousId, $storyId, $voteType === 'up' ? 'upvote' : 'downvote');
             }
         } else {
             // Create new vote
@@ -178,6 +211,8 @@ new #[Layout('layouts.app')] class extends Component {
                 'created_at' => now(),
             ]);
             $this->updateStoryVoteCounts($storyId);
+            // Track the interaction for personalization
+            $anonymousService->trackInteraction($anonymousId, $storyId, $voteType === 'up' ? 'upvote' : 'downvote');
         }
     }
 
@@ -210,23 +245,58 @@ new #[Layout('layouts.app')] class extends Component {
         try {
             $this->currentPage++;
             
-            $newStories = $this->getStoriesQuery()
-                ->skip(($this->currentPage - 1) * $this->perPage)
-                ->take($this->perPage)
-                ->get();
-            
-            if ($newStories->count() > 0) {
-                // Append new story IDs to existing collection
-                $newIds = $newStories->pluck('id')->toArray();
-                $this->storyIds = array_merge($this->storyIds, $newIds);
-                
-                // Check if there are more pages
-                $this->hasMorePages = $newStories->count() === $this->perPage;
+            if ($this->currentFilter === 'personalized' || $this->currentFilter === 'newest') {
+                $this->loadMorePersonalizedStories();
             } else {
-                $this->hasMorePages = false;
+                $newStories = $this->getStoriesQuery()
+                    ->skip(($this->currentPage - 1) * $this->perPage)
+                    ->take($this->perPage)
+                    ->get();
+                
+                if ($newStories->count() > 0) {
+                    // Append new story IDs to existing collection
+                    $newIds = $newStories->pluck('id')->toArray();
+                    $this->storyIds = array_merge($this->storyIds, $newIds);
+                    
+                    // Check if there are more pages
+                    $this->hasMorePages = $newStories->count() === $this->perPage;
+                } else {
+                    $this->hasMorePages = false;
+                }
             }
         } finally {
             $this->isLoadingMore = false;
+        }
+    }
+
+    private function loadMorePersonalizedStories()
+    {
+        $anonymousService = app(AnonymousUserService::class);
+        $personalizedFeedService = app(PersonalizedFeedService::class);
+        
+        $anonymousId = $anonymousService->getAnonymousId();
+        $userLocation = $anonymousService->getUserLocation($anonymousId);
+        
+        // Request more stories than perPage to check if there are more
+        $newStories = $personalizedFeedService->getPersonalizedFeed(
+            $anonymousId,
+            $userLocation,
+            $this->perPage + 1, // Request one extra to check for more
+            $this->storyIds, // Exclude already loaded stories
+            $this->selectedCategory,
+            $this->selectedTheme
+        );
+        
+        if ($newStories->count() > 0) {
+            // Check if there are more stories available
+            $this->hasMorePages = $newStories->count() > $this->perPage;
+            
+            // Take only the requested number of stories
+            $actualNewStories = $newStories->take($this->perPage);
+            $newIds = $actualNewStories->pluck('id')->toArray();
+            $this->storyIds = array_merge($this->storyIds, $newIds);
+        } else {
+            $this->hasMorePages = false;
         }
     }
 }; ?>
@@ -254,7 +324,10 @@ new #[Layout('layouts.app')] class extends Component {
                     <div class="flex items-center space-x-1 overflow-x-auto pb-1">
                         <button wire:click="setFilter('newest')"
                             class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'newest' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
-                            Newest
+                            <span class="flex items-center gap-1">
+                                <span>✨</span>
+                                For You
+                            </span>
                         </button>
                         <button wire:click="setFilter('trending')"
                             class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'trending' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
@@ -477,7 +550,7 @@ new #[Layout('layouts.app')] class extends Component {
                                     <circle class="opacity-25" cx="12" cy="12" r="10"
                                         stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                     </path>
                                 </svg>
                                 <span class="text-xs">Loading more stories...</span>
