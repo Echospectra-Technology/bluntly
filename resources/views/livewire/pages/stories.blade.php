@@ -155,12 +155,13 @@ new #[Layout('layouts.app')] class extends Component {
         }
 
         // Fetch fresh models with relationships in the correct order
-        $stories = Story::with(['tags', 'comments' => function($query) {
-            $query->whereNull('parent_id')
-                  ->where('status', 'published')
-                  ->orderByRaw('(upvotes - downvotes) DESC')
-                  ->limit(2);
-        }, 'theme'])
+        $stories = Story::with([
+            'tags',
+            'comments' => function ($query) {
+                $query->whereNull('parent_id')->where('status', 'published')->orderByRaw('(upvotes - downvotes) DESC')->limit(2);
+            },
+            'theme',
+        ])
             ->whereIn('id', $this->storyIds)
             ->get()
             ->sortBy(function ($story) {
@@ -458,15 +459,18 @@ new #[Layout('layouts.app')] class extends Component {
                     <div class="space-y-1 md:space-y-2">
                         @forelse ($this->stories as $index => $story)
                             <!-- Progress marker every 10 posts -->
-                            @if($index > 0 && $index % 10 === 0 && $showProgressMarker)
+                            @if ($index > 0 && $index % 10 === 0 && $showProgressMarker)
                                 <div class="flex items-center justify-center py-3 my-2">
-                                    <div class="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded-full px-4 py-2 shadow-sm">
+                                    <div
+                                        class="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded-full px-4 py-2 shadow-sm">
                                         <div class="flex items-center gap-2">
                                             <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                                             <span class="text-xs text-gray-600 font-medium">
-                                                Story {{ $index + $totalViewedToday }} of {{ $index + $totalViewedToday + 20 }} today
+                                                Story {{ $index + $totalViewedToday }} of
+                                                {{ $index + $totalViewedToday + 20 }} today
                                             </span>
-                                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+                                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"
+                                                style="animation-delay: 0.5s"></div>
                                         </div>
                                         <div class="text-center mt-1">
                                             <span class="text-[10px] text-gray-500">Keep scrolling for more →</span>
@@ -474,16 +478,19 @@ new #[Layout('layouts.app')] class extends Component {
                                     </div>
                                 </div>
                             @endif
-                            
-                            <article class="border-b border-gray-50 pb-2 md:pb-3 last:border-b-0 hover:bg-gray-50/50 transition-colors duration-200 
+
+                            <article
+                                class="border-b border-gray-50 pb-2 md:pb-3 last:border-b-0 hover:bg-gray-50/50 transition-colors duration-200 
                                 {{ $index % 2 === 1 ? 'bg-gray-50/20' : 'bg-white' }} px-2 md:px-3 py-2 rounded-sm">
                                 <!-- Mobile-first metadata layout -->
                                 <div class="mb-2 space-y-1">
                                     <!-- Main metadata line -->
                                     <div class="flex items-center text-xs">
-                                        <span class="font-medium text-gray-700 text-xs">{{ '@' . $story->alias }}</span>
+                                        <span
+                                            class="font-medium text-gray-700 text-xs">{{ '@' . $story->alias }}</span>
                                         <span class="mx-2 text-gray-300">•</span>
-                                        <span class="text-gray-500 text-xs">{{ $story->created_at->diffForHumans() }}</span>
+                                        <span
+                                            class="text-gray-500 text-xs">{{ $story->created_at->diffForHumans() }}</span>
                                         @if ($story->category)
                                             <span class="mx-2 text-gray-300">•</span>
                                             <span
@@ -519,8 +526,10 @@ new #[Layout('layouts.app')] class extends Component {
                                     @endphp
                                     <div class="line-clamp-3">
                                         {{ $preview }}
-                                        @if($isLimited)
-                                            <a href="{{ route('post', $story->slug) }}" class="text-gray-800 hover:text-black font-medium transition-colors">...Read more</a>
+                                        @if ($isLimited)
+                                            <a href="{{ route('post', $story->slug) }}"
+                                                class="text-gray-800 hover:text-black font-medium transition-colors">...Read
+                                                more</a>
                                         @endif
                                     </div>
                                 </div>
@@ -550,7 +559,8 @@ new #[Layout('layouts.app')] class extends Component {
                                                 ↓
                                             </button>
                                         </div>
-                                        <a href="{{ route('post', $story->slug) }}#comments" class="flex items-center gap-1 hover:text-gray-800 transition-colors">
+                                        <a href="{{ route('post', $story->slug) }}#comments"
+                                            class="flex items-center gap-1 hover:text-gray-800 transition-colors">
                                             <span>💬</span>
                                             <span class="text-xs hidden sm:inline">{{ $story->comments->count() }}
                                                 comments</span>
@@ -565,55 +575,63 @@ new #[Layout('layouts.app')] class extends Component {
                                     </div>
 
                                     <!-- Quick actions - visible on hover for desktop -->
-                                    <div class="hidden md:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <div
+                                        class="hidden md:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')"
                                             class="text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z">
                                                 </path>
                                             </svg>
                                             Share
                                         </button>
-                                        <a href="{{ route('post', $story->slug) }}" class="text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100">
+                                        <a href="{{ route('post', $story->slug) }}"
+                                            class="text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100">
                                             Read
                                         </a>
                                     </div>
                                     <!-- Mobile share button -->
                                     <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')"
                                         class="md:hidden text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z">
                                             </path>
                                         </svg>
                                     </button>
                                 </div>
-                                
+
                                 <!-- Inline Comments Preview -->
-                                @if($story->comments->count() > 0)
+                                @if ($story->comments->count() > 0)
                                     <div class="mt-2 pt-2 border-t border-gray-50">
                                         <div class="space-y-1">
-                                            @foreach($story->comments->take(2) as $comment)
+                                            @foreach ($story->comments->take(2) as $comment)
                                                 <div class="flex items-start gap-2 text-xs">
-                                                    <div class="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-[10px] text-gray-600 flex-shrink-0">
+                                                    <div
+                                                        class="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-[10px] text-gray-600 flex-shrink-0">
                                                         {{ strtoupper(substr($comment->alias, 0, 1)) }}
                                                     </div>
                                                     <div class="flex-1 min-w-0">
-                                                        <span class="font-medium text-gray-700 text-[10px]">@{{ $comment->alias }}</span>
+                                                        <span
+                                                            class="font-medium text-gray-700 text-[10px]">{{ '@' . $comment->alias }}</span>
                                                         <p class="text-gray-600 line-clamp-2 leading-tight">
                                                             {{ Str::limit(strip_tags($comment->body), 80) }}
                                                         </p>
                                                     </div>
-                                                    @if($comment->upvotes > 0)
-                                                        <span class="text-[10px] text-green-600 flex items-center gap-0.5">
+                                                    @if ($comment->upvotes > 0)
+                                                        <span
+                                                            class="text-[10px] text-green-600 flex items-center gap-0.5">
                                                             ↑{{ $comment->upvotes }}
                                                         </span>
                                                     @endif
                                                 </div>
                                             @endforeach
-                                            @if($story->comments->count() > 2)
-                                                <a href="{{ route('post', $story->slug) }}#comments" class="text-[10px] text-gray-500 hover:text-gray-800 transition-colors">
+                                            @if ($story->comments->count() > 2)
+                                                <a href="{{ route('post', $story->slug) }}#comments"
+                                                    class="text-[10px] text-gray-500 hover:text-gray-800 transition-colors">
                                                     View {{ $story->comments->count() - 2 }} more comments →
                                                 </a>
                                             @endif
@@ -636,8 +654,10 @@ new #[Layout('layouts.app')] class extends Component {
                                 class="flex items-center space-x-2 text-gray-400 animate-pulse">
                                 <div class="flex space-x-1">
                                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                        style="animation-delay: 0.1s"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                        style="animation-delay: 0.2s"></div>
                                 </div>
                                 <span class="text-xs font-medium">Loading more stories...</span>
                             </div>
@@ -645,7 +665,7 @@ new #[Layout('layouts.app')] class extends Component {
 
                         <!-- Skeleton loading preview -->
                         <div wire:loading wire:target="loadMore" class="space-y-2">
-                            @for($i = 0; $i < 3; $i++)
+                            @for ($i = 0; $i < 3; $i++)
                                 <div class="bg-gray-50/50 p-3 rounded-sm animate-pulse">
                                     <div class="flex items-center gap-2 mb-2">
                                         <div class="w-4 h-4 bg-gray-200 rounded-full"></div>
@@ -705,7 +725,8 @@ new #[Layout('layouts.app')] class extends Component {
                     <div class="bg-gradient-to-br from-gray-900 to-black p-4 rounded-lg text-white">
                         <div class="text-center">
                             <h3 class="text-xs font-medium mb-2">Share Your Story</h3>
-                            <p class="text-[10px] text-gray-300 mb-3">Your voice matters. Post anonymously and connect with
+                            <p class="text-[10px] text-gray-300 mb-3">Your voice matters. Post anonymously and connect
+                                with
                                 others who understand.</p>
                             <a href="/post/create"
                                 class="inline-block bg-white text-black px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors">
