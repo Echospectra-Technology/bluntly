@@ -10,6 +10,10 @@
 @section('og_description', Str::limit(strip_tags($story->body), 160))
 @section('og_type', 'article')
 @section('og_url', route('post', $story->slug))
+@section('og_image', route('post.share-image', $story->slug))
+@section('og_image_width', '1200')
+@section('og_image_height', '630')
+@section('og_image_alt', $story->title . ' - Bluntly')
 
 @section('article_published_time', $story->created_at->toISOString())
 @section('article_modified_time', $story->updated_at->toISOString())

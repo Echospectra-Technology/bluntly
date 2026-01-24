@@ -71,6 +71,9 @@ Route::get('/post/{slug}', function ($slug) {
     return view('story-details', compact('story'));
 })->name('post');
 
+// Share image generation
+Route::get('/post/{slug}/share-image', [\App\Http\Controllers\StoryImageController::class, 'generateShareImage'])->name('post.share-image');
+
 // Trending route - redirect to stories with trending filter
 Route::get('/trending', function () {
     return redirect()->route('feed', ['filter' => 'trending']);
