@@ -18,7 +18,13 @@ Route::get('/', function () {
     // Get current weekly theme
     $currentTheme = \App\Models\WeeklyTheme::current()->first();
 
-    return view('index', compact('trendingStories', 'currentTheme'));
+    // Get random stories for scrolling background
+    $scrollingStories = \App\Models\Story::where('status', 'published')
+        ->inRandomOrder()
+        ->take(30)
+        ->get();
+
+    return view('index', compact('trendingStories', 'currentTheme', 'scrollingStories'));
 })->name('index');
 
 // Health check endpoint

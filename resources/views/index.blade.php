@@ -84,6 +84,52 @@
             <div class="absolute top-1/2 left-0 w-full h-px bg-gray-300"></div>
             <div class="absolute top-3/4 left-0 w-full h-px bg-gray-300"></div>
         </div>
+
+        <!-- Scrolling Stories Background -->
+        @if($scrollingStories->count() > 0)
+            @php
+                $row1 = $scrollingStories->take(10);
+                $row2 = $scrollingStories->skip(10)->take(10);
+                $row3 = $scrollingStories->skip(20)->take(10);
+            @endphp
+
+            <!-- Row 1 - Scroll Left -->
+            <div class="absolute top-[15%] left-0 w-full pointer-events-none z-0 opacity-35">
+                <div class="flex gap-4 animate-scroll-left">
+                    @foreach($row1->concat($row1) as $story)
+                        <div class="flex-shrink-0 bg-white/60 backdrop-blur-sm border border-gray-300/40 rounded-lg px-4 py-3 max-w-xs">
+                            <p class="text-xs text-gray-400 mb-1 font-medium">{{ '@' . $story->alias }}</p>
+                            <p class="text-sm text-gray-500 line-clamp-2">{{ Str::limit($story->title, 80) }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Row 2 - Scroll Right -->
+            <div class="absolute top-[45%] left-0 w-full pointer-events-none z-0 opacity-35">
+                <div class="flex gap-4 animate-scroll-right-slow">
+                    @foreach($row2->concat($row2) as $story)
+                        <div class="flex-shrink-0 bg-white/60 backdrop-blur-sm border border-gray-300/40 rounded-lg px-4 py-3 max-w-xs">
+                            <p class="text-xs text-gray-400 mb-1 font-medium">{{ '@' . $story->alias }}</p>
+                            <p class="text-sm text-gray-500 line-clamp-2">{{ Str::limit($story->title, 80) }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Row 3 - Scroll Left -->
+            <div class="absolute top-[75%] left-0 w-full pointer-events-none z-0 opacity-35">
+                <div class="flex gap-4 animate-scroll-left-slow">
+                    @foreach($row3->concat($row3) as $story)
+                        <div class="flex-shrink-0 bg-white/60 backdrop-blur-sm border border-gray-300/40 rounded-lg px-4 py-3 max-w-xs">
+                            <p class="text-xs text-gray-400 mb-1 font-medium">{{ '@' . $story->alias }}</p>
+                            <p class="text-sm text-gray-500 line-clamp-2">{{ Str::limit($story->title, 80) }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <div class="max-w-4xl mx-auto text-center relative z-10">
             <!-- Main Heading -->
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-light leading-tight mb-6">
