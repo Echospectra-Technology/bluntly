@@ -6,10 +6,10 @@
         <div class="flex items-center">
             <a href="/" class="flex items-center space-x-3 group">
                 <!-- B Icon Block -->
-                <div
+                {{-- <div
                     class="w-10 h-10 bg-black text-white flex items-center justify-center rounded-lg font-bold text-sm tracking-tight group-hover:bg-gray-800 transition-colors">
                     B
-                </div>
+                </div> --}}
                 <!-- Logo Text -->
                 <span class="text-lg font-bold text-black tracking-tight">
                     Bluntly
