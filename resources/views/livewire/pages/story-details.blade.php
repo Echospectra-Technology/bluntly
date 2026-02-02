@@ -354,11 +354,11 @@ new #[Layout('components.layouts.app')] class extends Component {
     <x-navigation current-page="story" />
 
     <!-- Story Content -->
-    <article class="bg-white min-h-screen">
+    <article class="bg-white dark:bg-zinc-900 min-h-screen">
         <!-- Back Navigation -->
         <div class="max-w-3xl mx-auto px-4 md:px-6 pt-6">
             <a href="{{ route('feed') }}"
-                class="inline-flex items-center text-sm text-gray-500 hover:text-black transition-colors">
+                class="inline-flex items-center text-sm text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
                 ← Back to Stories
             </a>
         </div>
@@ -368,18 +368,18 @@ new #[Layout('components.layouts.app')] class extends Component {
             <!-- Story Meta -->
             <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between mb-3">
                 <div class="flex items-center flex-wrap gap-2">
-                    <span class="text-xs font-medium text-gray-700">{{ '@' . $story->alias }}</span>
-                    <span class="text-gray-300 hidden md:inline">•</span>
-                    <span class="text-xs text-gray-500">{{ $story->created_at->diffForHumans() }}</span>
+                    <span class="text-xs font-medium text-gray-700 dark:text-zinc-300">{{ '@' . $story->alias }}</span>
+                    <span class="text-gray-300 dark:text-zinc-600 hidden md:inline">•</span>
+                    <span class="text-xs text-gray-500 dark:text-zinc-400">{{ $story->created_at->diffForHumans() }}</span>
                     @if ($story->category)
-                        <span class="text-gray-300 hidden md:inline">•</span>
+                        <span class="text-gray-300 dark:text-zinc-600 hidden md:inline">•</span>
                         <span
-                            class="text-xs uppercase tracking-wide text-gray-400 bg-gray-100 px-2 py-1 rounded">{{ strtoupper($story->category) }}</span>
+                            class="text-xs uppercase tracking-wide text-gray-400 dark:text-zinc-500 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded">{{ strtoupper($story->category) }}</span>
                     @endif
                     @if ($story->theme)
-                        <span class="text-gray-300 hidden md:inline">•</span>
+                        <span class="text-gray-300 dark:text-zinc-600 hidden md:inline">•</span>
                         <a href="{{ route('theme.details', $story->theme->slug) }}"
-                            class="text-xs bg-black text-white px-2 py-1 rounded-full hover:bg-gray-800 transition-colors">
+                            class="text-xs bg-black text-white dark:bg-white dark:text-black px-2 py-1 rounded-full hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors">
                             {{ $story->theme->name }}
                         </a>
                     @endif
@@ -388,7 +388,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <!-- Action Buttons -->
                 <div class="flex items-center space-x-3 md:space-x-4">
                     <button wire:click="toggleShareModal"
-                        class="text-gray-500 hover:text-black transition-colors text-sm px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
+                        class="text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800 flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z">
@@ -397,7 +397,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         Share
                     </button>
                     <button
-                        class="text-red-500 hover:text-red-700 transition-colors text-sm px-2 py-1 rounded hover:bg-red-50 flex items-center gap-1">
+                        class="text-red-500 hover:text-red-700 transition-colors text-sm px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 14.5c-.77.833.192 2.5 1.732 2.5z">
@@ -409,7 +409,7 @@ new #[Layout('components.layouts.app')] class extends Component {
             </div>
 
             <!-- Story Title -->
-            <h1 class="text-lg md:text-xl lg:text-2xl font-medium leading-tight text-gray-900">
+            <h1 class="text-lg md:text-xl lg:text-2xl font-medium leading-tight text-gray-900 dark:text-zinc-100">
                 {{ $story->title }}
             </h1>
         </header>
@@ -417,35 +417,35 @@ new #[Layout('components.layouts.app')] class extends Component {
         <!-- Story Body -->
         <div class="max-w-3xl mx-auto px-4 md:px-6">
             <div class="prose max-w-none">
-                <div class="text-sm leading-snug text-gray-700 mb-4 story-content compact-text">
+                <div class="text-sm leading-snug text-gray-700 dark:text-zinc-300 mb-4 story-content compact-text">
                     {!! $story->body !!}
                 </div>
             </div>
         </div>
 
         <!-- Story Engagement -->
-        <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 border-t border-gray-100">
+        <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 border-t border-gray-100 dark:border-zinc-800">
             <div class="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between">
                 <!-- Voting -->
                 <div class="flex items-center space-x-4 md:space-x-6">
                     <div class="flex items-center gap-2">
                         <button wire:click="toggleVote('up')"
-                            class="p-1.5 rounded-full transition-colors {{ $this->getUserVoteStatus($story->id) === 'up' ? 'text-green-600 bg-green-50' : 'text-gray-500 hover:text-green-600 hover:bg-green-50' }}">
+                            class="p-1.5 rounded-full transition-colors {{ $this->getUserVoteStatus($story->id) === 'up' ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-gray-500 dark:text-zinc-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30' }}">
                             ↑
                         </button>
-                        <span class="text-xs font-medium text-gray-700">{{ $story->upvotes }}</span>
+                        <span class="text-xs font-medium text-gray-700 dark:text-zinc-300">{{ $story->upvotes }}</span>
                         <button wire:click="toggleVote('down')"
-                            class="p-1.5 rounded-full transition-colors {{ $this->getUserVoteStatus($story->id) === 'down' ? 'text-red-600 bg-red-50' : 'text-gray-500 hover:text-red-600 hover:bg-red-50' }}">
+                            class="p-1.5 rounded-full transition-colors {{ $this->getUserVoteStatus($story->id) === 'down' ? 'text-red-600 bg-red-50 dark:bg-red-900/30' : 'text-gray-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30' }}">
                             ↓
                         </button>
                     </div>
 
-                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400">
                         <span>💬</span>
                         <span>{{ $this->comments->count() }}</span>
                     </div>
 
-                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400">
                         <span>👁</span>
                         <span>{{ number_format($story->views) }}</span>
                     </div>
@@ -453,7 +453,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                 <!-- Share -->
                 <button wire:click="toggleShareModal"
-                    class="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:text-black transition-colors self-start md:self-auto hover:bg-gray-50 rounded-lg">
+                    class="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors self-start md:self-auto hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -466,21 +466,21 @@ new #[Layout('components.layouts.app')] class extends Component {
         </div>
 
         <!-- Comments Section -->
-        <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 border-t border-gray-100">
-            <h3 class="text-base font-medium mb-4">Comments</h3>
+        <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 border-t border-gray-100 dark:border-zinc-800">
+            <h3 class="text-base font-medium mb-4 text-gray-900 dark:text-zinc-100">Comments</h3>
 
             <!-- Add Comment -->
             <div class="mb-4">
                 <textarea wire:model="newComment" placeholder="Share your thoughts anonymously..." rows="3"
-                    class="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-xs">
+                    class="w-full p-3 border border-gray-200 dark:border-zinc-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent text-xs bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder:text-gray-500 dark:placeholder:text-zinc-400">
                 </textarea>
                 <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:justify-between md:items-center mt-2">
-                    <span class="text-xs text-gray-500">Your comment will be posted anonymously</span>
+                    <span class="text-xs text-gray-500 dark:text-zinc-400">Your comment will be posted anonymously</span>
                     <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment"
-                        class="bg-black text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-gray-800 transition-colors self-start md:self-auto disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="bg-black text-white dark:bg-white dark:text-black px-4 py-2 rounded-lg text-xs font-medium hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors self-start md:self-auto disabled:opacity-50 disabled:cursor-not-allowed">
                         <span wire:loading.remove wire:target="addComment">Post Comment</span>
                         <span wire:loading wire:target="addComment" class="flex items-center gap-1">
-                            <svg class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg"
+                            <svg class="animate-spin h-3 w-3 text-white dark:text-black" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
@@ -501,32 +501,32 @@ new #[Layout('components.layouts.app')] class extends Component {
                         <div class="flex space-x-3">
                             <!-- Avatar placeholder -->
                             <div
-                                class="flex-shrink-0 w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-600">
+                                class="flex-shrink-0 w-6 h-6 bg-gray-300 dark:bg-zinc-600 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 dark:text-zinc-300">
                                 {{ strtoupper(substr($comment->alias, 0, 1)) }}
                             </div>
 
                             <div class="flex-1 min-w-0">
-                                <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg p-3 shadow-sm">
                                     <div class="flex items-center justify-between mb-1">
                                         <div class="flex items-center space-x-2">
-                                            <span class="text-xs font-medium text-gray-700">@
+                                            <span class="text-xs font-medium text-gray-700 dark:text-zinc-300">@
                                                 {{ $comment->alias }}</span>
                                             <span
-                                                class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                                                class="text-xs text-gray-400 dark:text-zinc-500">{{ $comment->created_at->diffForHumans() }}</span>
                                         </div>
                                         <div class="flex items-center gap-2">
                                             <button wire:click="toggleCommentVote({{ $comment->id }}, 'up')"
-                                                class="text-xs text-gray-500 hover:text-green-600 px-2 py-1 rounded-full hover:bg-green-50 transition-colors">↑
+                                                class="text-xs text-gray-500 dark:text-zinc-400 hover:text-green-600 px-2 py-1 rounded-full hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors">↑
                                                 {{ $comment->upvotes }}</button>
                                             <button wire:click="toggleCommentVote({{ $comment->id }}, 'down')"
-                                                class="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded-full hover:bg-red-50 transition-colors">↓</button>
+                                                class="text-xs text-gray-500 dark:text-zinc-400 hover:text-red-600 px-2 py-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">↓</button>
                                         </div>
                                     </div>
-                                    <div class="text-xs text-gray-700 leading-snug mb-2 comment-content compact-text">
+                                    <div class="text-xs text-gray-700 dark:text-zinc-300 leading-snug mb-2 comment-content compact-text">
                                         {!! $comment->body !!}
                                     </div>
                                     <button wire:click="startReply({{ $comment->id }})"
-                                        class="text-xs text-gray-500 hover:text-black transition-colors px-2 py-1 rounded hover:bg-gray-50">
+                                        class="text-xs text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-zinc-800">
                                         💬 Reply
                                     </button>
                                 </div>
@@ -536,25 +536,25 @@ new #[Layout('components.layouts.app')] class extends Component {
                         <!-- Reply Form -->
                         @if ($replyingTo === $comment->id)
                             <div class="ml-11 mt-3">
-                                <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                                <div class="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-4 rounded-lg">
                                     <textarea wire:model="newReply" placeholder="Write a reply..." rows="2"
-                                        class="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm bg-white">
+                                        class="w-full p-3 border border-gray-200 dark:border-zinc-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 placeholder:text-gray-500 dark:placeholder:text-zinc-400">
                                     </textarea>
                                     <div class="flex justify-between items-center mt-3">
-                                        <span class="text-xs text-gray-500">Your reply will be posted
+                                        <span class="text-xs text-gray-500 dark:text-zinc-400">Your reply will be posted
                                             anonymously</span>
                                         <div class="flex gap-2">
                                             <button wire:click="cancelReply"
-                                                class="text-xs text-gray-500 hover:text-black transition-colors px-3 py-1 rounded hover:bg-gray-100">
+                                                class="text-xs text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800">
                                                 Cancel
                                             </button>
                                             <button wire:click="addReply({{ $comment->id }})"
                                                 wire:loading.attr="disabled" wire:target="addReply"
-                                                class="bg-black text-white px-3 py-1 rounded text-xs font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                                class="bg-black text-white dark:bg-white dark:text-black px-3 py-1 rounded text-xs font-medium hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <span wire:loading.remove wire:target="addReply">Reply</span>
                                                 <span wire:loading wire:target="addReply"
                                                     class="flex items-center gap-1">
-                                                    <svg class="animate-spin h-3 w-3 text-white"
+                                                    <svg class="animate-spin h-3 w-3 text-white dark:text-black"
                                                         xmlns="http://www.w3.org/2000/svg" fill="none"
                                                         viewBox="0 0 24 24">
                                                         <circle class="opacity-25" cx="12" cy="12"
@@ -574,35 +574,35 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                         <!-- Replies -->
                         @if ($comment->replies->isNotEmpty())
-                            <div class="ml-11 mt-4 space-y-4 border-l-2 border-gray-200 pl-4">
+                            <div class="ml-11 mt-4 space-y-4 border-l-2 border-gray-200 dark:border-zinc-700 pl-4">
                                 @foreach ($comment->replies as $reply)
                                     <div class="flex space-x-3">
                                         <!-- Reply Avatar -->
                                         <div
-                                            class="flex-shrink-0 w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-600">
+                                            class="flex-shrink-0 w-7 h-7 bg-gray-300 dark:bg-zinc-600 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 dark:text-zinc-300">
                                             {{ strtoupper(substr($reply->alias, 0, 1)) }}
                                         </div>
 
                                         <div class="flex-1 min-w-0">
-                                            <div class="bg-gray-50 border border-gray-200 p-3 rounded-lg">
+                                            <div class="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-3 rounded-lg">
                                                 <div class="flex items-center justify-between mb-2">
                                                     <div class="flex items-center space-x-2">
-                                                        <span class="text-xs font-medium text-gray-700">
+                                                        <span class="text-xs font-medium text-gray-700 dark:text-zinc-300">
                                                             {{ '@' . $reply->alias }}</span>
                                                         <span
-                                                            class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
+                                                            class="text-xs text-gray-400 dark:text-zinc-500">{{ $reply->created_at->diffForHumans() }}</span>
                                                     </div>
                                                     <div class="flex items-center gap-2">
                                                         <button
                                                             wire:click="toggleCommentVote({{ $reply->id }}, 'up')"
-                                                            class="text-xs text-gray-500 hover:text-green-600 px-2 py-1 rounded-full hover:bg-green-50 transition-colors">↑
+                                                            class="text-xs text-gray-500 dark:text-zinc-400 hover:text-green-600 px-2 py-1 rounded-full hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors">↑
                                                             {{ $reply->upvotes }}</button>
                                                         <button
                                                             wire:click="toggleCommentVote({{ $reply->id }}, 'down')"
-                                                            class="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded-full hover:bg-red-50 transition-colors">↓</button>
+                                                            class="text-xs text-gray-500 dark:text-zinc-400 hover:text-red-600 px-2 py-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">↓</button>
                                                     </div>
                                                 </div>
-                                                <div class="text-sm text-gray-700 leading-relaxed comment-content">
+                                                <div class="text-sm text-gray-700 dark:text-zinc-300 leading-relaxed comment-content">
                                                     {!! $reply->body !!}
                                                 </div>
                                             </div>
@@ -614,14 +614,14 @@ new #[Layout('components.layouts.app')] class extends Component {
                     </div>
                 @empty
                     <div class="text-center py-8">
-                        <p class="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
+                        <p class="text-gray-500 dark:text-zinc-400">No comments yet. Be the first to share your thoughts!</p>
                     </div>
                 @endforelse
             </div>
 
             <!-- Load More Comments -->
             <div class="text-center mt-8">
-                <button class="text-sm text-gray-600 hover:text-black transition-colors">
+                <button class="text-sm text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
                     Load more comments
                 </button>
             </div>
@@ -629,23 +629,23 @@ new #[Layout('components.layouts.app')] class extends Component {
 
         <!-- Related Stories -->
         @if ($this->relatedStories->isNotEmpty())
-            <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 md:py-6 border-t border-gray-100">
-                <h3 class="text-sm md:text-base font-medium mb-3 md:mb-4">More posts like this</h3>
+            <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 md:py-6 border-t border-gray-100 dark:border-zinc-800">
+                <h3 class="text-sm md:text-base font-medium mb-3 md:mb-4 text-gray-900 dark:text-zinc-100">More posts like this</h3>
 
                 <div class="space-y-3 md:space-y-4">
                     @foreach ($this->relatedStories as $relatedStory)
                         <a href="{{ route('post', $relatedStory->slug) }}"
-                            class="related-story-card block p-3 md:p-4 border border-gray-200 rounded-lg hover:shadow-md active:shadow-sm transition-shadow bg-white">
+                            class="related-story-card block p-3 md:p-4 border border-gray-200 dark:border-zinc-700 rounded-lg hover:shadow-md active:shadow-sm transition-shadow bg-white dark:bg-zinc-800">
 
                             <!-- Mobile-first header with stacked layout -->
                             <div class="space-y-2 md:space-y-0">
                                 <!-- Top row: Author and category -->
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="text-xs font-medium text-gray-700">{{ '@' . $relatedStory->alias }}</span>
+                                        class="text-xs font-medium text-gray-700 dark:text-zinc-300">{{ '@' . $relatedStory->alias }}</span>
                                     @if ($relatedStory->category)
                                         <span
-                                            class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">{{ strtoupper($relatedStory->category) }}</span>
+                                            class="text-xs text-gray-400 dark:text-zinc-500 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded">{{ strtoupper($relatedStory->category) }}</span>
                                     @endif
                                 </div>
 
@@ -653,8 +653,8 @@ new #[Layout('components.layouts.app')] class extends Component {
                                 @if ($relatedStory->theme)
                                     <div class="flex items-start">
                                         <span
-                                            class="inline-flex items-center text-xs bg-black text-white px-3 py-1 rounded-full">
-                                            <span class="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                            class="inline-flex items-center text-xs bg-black text-white dark:bg-white dark:text-black px-3 py-1 rounded-full">
+                                            <span class="w-1.5 h-1.5 bg-white dark:bg-black rounded-full mr-2"></span>
                                             {{ Str::limit($relatedStory->theme->name, 30) }}
                                         </span>
                                     </div>
@@ -663,39 +663,39 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                             <!-- Title with mobile-optimized sizing -->
                             <h4
-                                class="text-sm md:text-base font-medium text-gray-900 mt-3 mb-2 leading-tight line-clamp-2">
+                                class="text-sm md:text-base font-medium text-gray-900 dark:text-zinc-100 mt-3 mb-2 leading-tight line-clamp-2">
                                 {{ $relatedStory->title }}
                             </h4>
 
                             <!-- Description with mobile-friendly text -->
-                            <p class="text-xs md:text-sm text-gray-600 line-clamp-2 leading-relaxed mb-3">
+                            <p class="text-xs md:text-sm text-gray-600 dark:text-zinc-400 line-clamp-2 leading-relaxed mb-3">
                                 {{ Str::limit(strip_tags($relatedStory->body), 100) }}
                             </p>
 
                             <!-- Bottom section with improved mobile layout -->
                             <div
-                                class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between pt-2 border-t border-gray-100">
+                                class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between pt-2 border-t border-gray-100 dark:border-zinc-800">
                                 <!-- Tags row -->
                                 <div class="flex items-center gap-2 flex-wrap">
                                     @if ($relatedStory->tags->isNotEmpty())
                                         @foreach ($relatedStory->tags->take(2) as $tag)
                                             <span
-                                                class="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">#{{ $tag->name }}</span>
+                                                class="text-xs text-gray-500 dark:text-zinc-400 bg-gray-50 dark:bg-zinc-800 px-2 py-1 rounded">#{{ $tag->name }}</span>
                                         @endforeach
                                     @endif
                                 </div>
 
                                 <!-- Stats with larger touch targets -->
                                 <div class="flex items-center gap-3 md:gap-4">
-                                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400">
                                         <span class="text-green-600">↑</span>
                                         <span class="font-medium">{{ $relatedStory->upvotes }}</span>
                                     </div>
-                                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400">
                                         <span>💬</span>
                                         <span>{{ $relatedStory->comments->count() }}</span>
                                     </div>
-                                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400">
                                         <span>👁</span>
                                         <span>{{ number_format($relatedStory->views) }}</span>
                                     </div>
@@ -708,7 +708,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <!-- Show all button for mobile -->
                 <div class="mt-4 md:mt-6 text-center">
                     <a href="{{ route('feed') }}"
-                        class="inline-flex items-center text-sm text-gray-600 hover:text-black transition-colors px-4 py-2 rounded-lg hover:bg-gray-50">
+                        class="inline-flex items-center text-sm text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
                         See more stories →
                     </a>
                 </div>
@@ -718,12 +718,12 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     <!-- Share Modal -->
     @if ($showShareModal)
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        <div class="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50"
             wire:click="toggleShareModal">
-            <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4" wire:click.stop>
+            <div class="bg-white dark:bg-zinc-800 rounded-lg p-6 w-full max-w-md mx-4" wire:click.stop>
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Share this story</h3>
-                    <button wire:click="toggleShareModal" class="text-gray-400 hover:text-gray-600">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-zinc-100">Share this story</h3>
+                    <button wire:click="toggleShareModal" class="text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12"></path>
@@ -734,75 +734,75 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <!-- Twitter -->
                     <button wire:click="shareToSocial('twitter')"
-                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="flex items-center gap-3 p-3 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         <div
                             class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             𝕏
                         </div>
-                        <span class="text-sm font-medium text-gray-700">Twitter</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-zinc-300">Twitter</span>
                     </button>
 
                     <!-- Facebook -->
                     <button wire:click="shareToSocial('facebook')"
-                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="flex items-center gap-3 p-3 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         <div
                             class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             f
                         </div>
-                        <span class="text-sm font-medium text-gray-700">Facebook</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-zinc-300">Facebook</span>
                     </button>
 
                     <!-- WhatsApp -->
                     <button wire:click="shareToSocial('whatsapp')"
-                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="flex items-center gap-3 p-3 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         <div
                             class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             W
                         </div>
-                        <span class="text-sm font-medium text-gray-700">WhatsApp</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-zinc-300">WhatsApp</span>
                     </button>
 
                     <!-- LinkedIn -->
                     <button wire:click="shareToSocial('linkedin')"
-                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="flex items-center gap-3 p-3 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         <div
                             class="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             in
                         </div>
-                        <span class="text-sm font-medium text-gray-700">LinkedIn</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-zinc-300">LinkedIn</span>
                     </button>
 
                     <!-- Telegram -->
                     <button wire:click="shareToSocial('telegram')"
-                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="flex items-center gap-3 p-3 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         <div
                             class="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             T
                         </div>
-                        <span class="text-sm font-medium text-gray-700">Telegram</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-zinc-300">Telegram</span>
                     </button>
 
                     <!-- Reddit -->
                     <button wire:click="shareToSocial('reddit')"
-                        class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        class="flex items-center gap-3 p-3 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         <div
                             class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                             R
                         </div>
-                        <span class="text-sm font-medium text-gray-700">Reddit</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-zinc-300">Reddit</span>
                     </button>
                 </div>
 
                 <!-- Copy Link -->
-                <div class="border-t pt-4">
+                <div class="border-t border-gray-200 dark:border-zinc-700 pt-4">
                     <button onclick="copyToClipboard()"
-                        class="w-full flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full flex items-center gap-3 p-3 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
                             </path>
                         </svg>
-                        <span class="text-sm font-medium text-gray-700">Copy link</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-zinc-300">Copy link</span>
                     </button>
                 </div>
             </div>

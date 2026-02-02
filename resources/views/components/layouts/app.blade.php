@@ -57,11 +57,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-white text-black font-sans antialiased">
+<body class="bg-white dark:bg-zinc-900 text-black dark:text-zinc-100 font-sans antialiased" x-data x-init="$store.darkMode.init()">
     {{ $slot }}
-    
+
     <!-- Toast Notifications -->
     <x-toast />
+
+    @livewireStyles
+    @livewireScripts
 </body>
 
 </html>

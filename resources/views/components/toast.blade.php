@@ -24,7 +24,7 @@ class="fixed top-4 right-4 z-50 space-y-2">
              x-transition:leave="transition ease-in duration-100"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5">
+             class="max-w-sm w-full bg-white dark:bg-zinc-900 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black dark:ring-zinc-700 ring-opacity-5">
             <div class="flex-1 w-0 p-4">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
@@ -46,13 +46,13 @@ class="fixed top-4 right-4 z-50 space-y-2">
                         </svg>
                     </div>
                     <div class="ml-3 w-0 flex-1 pt-0.5">
-                        <p class="text-sm font-medium text-gray-900" x-text="toast.message"></p>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white" x-text="toast.message"></p>
                     </div>
                 </div>
             </div>
-            <div class="flex border-l border-gray-200">
-                <button @click="removeToast(toast.id)" 
-                        class="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-gray-600 hover:text-gray-500 focus:outline-none">
+            <div class="flex border-l border-gray-200 dark:border-zinc-800">
+                <button @click="removeToast(toast.id)"
+                        class="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-gray-500 dark:hover:text-zinc-300 focus:outline-none">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>

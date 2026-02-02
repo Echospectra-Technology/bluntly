@@ -59,7 +59,7 @@
     @livewireStyles
 </head>
 
-<body class="bg-white text-black font-sans antialiased">
+<body class="bg-white dark:bg-zinc-900 text-black dark:text-zinc-100 font-sans antialiased" x-data x-init="$store.darkMode.init()">
     {{ $slot }}
 
     <!-- Toast Notifications -->

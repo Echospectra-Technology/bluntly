@@ -320,36 +320,36 @@ new #[Layout('layouts.app')] class extends Component {
     <x-navigation current-page="stories" />
 
     <!-- Main Content -->
-    <div class="bg-white min-h-screen">
+    <div class="bg-white dark:bg-zinc-900 min-h-screen">
         <!-- Header Section -->
-        <div class="bg-gray-50 border-b border-gray-100">
+        <div class="bg-gray-50 dark:bg-zinc-800 border-b border-gray-100 dark:border-zinc-800">
             <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6">
                 <div class="max-w-4xl">
                     <h1 class="text-lg md:text-xl font-light mb-2">Stories</h1>
-                    <p class="text-xs text-gray-600 font-light">Anonymous voices, unfiltered truths</p>
+                    <p class="text-xs text-gray-600 dark:text-zinc-400 font-light">Anonymous voices, unfiltered truths</p>
                 </div>
             </div>
         </div>
 
         <!-- Filter Bar -->
-        <div class="bg-white border-b border-gray-100 sticky top-0 z-10">
+        <div class="bg-white dark:bg-zinc-900 border-b border-gray-100 dark:border-zinc-800 sticky top-0 z-10">
             <div class="max-w-6xl mx-auto px-4 md:px-6 py-4">
                 <div class="space-y-3">
                     <!-- Sort Options -->
                     <div class="flex items-center space-x-1 overflow-x-auto pb-1">
                         <button wire:click="setFilter('newest')"
-                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'newest' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'newest' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white' }}">
                             <span class="flex items-center gap-1">
                                 <span>✨</span>
                                 For You
                             </span>
                         </button>
                         <button wire:click="setFilter('trending')"
-                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'trending' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'trending' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white' }}">
                             Trending
                         </button>
                         <button wire:click="setFilter('popular')"
-                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'popular' ? 'bg-black text-white' : 'text-gray-600 hover:text-black' }}">
+                            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'popular' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white' }}">
                             Popular
                         </button>
                     </div>
@@ -357,23 +357,23 @@ new #[Layout('layouts.app')] class extends Component {
                     <!-- Category Filter -->
                     <div class="flex items-center space-x-1 overflow-x-auto pb-1">
                         <button wire:click="setCategory('all')"
-                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'all' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'all' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             All
                         </button>
                         <button wire:click="setCategory('confession')"
-                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'confession' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'confession' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Confession
                         </button>
                         <button wire:click="setCategory('rant')"
-                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'rant' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'rant' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Rant
                         </button>
                         <button wire:click="setCategory('gist')"
-                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'gist' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'gist' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Gist
                         </button>
                         <button wire:click="setCategory('story')"
-                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'story' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-black border border-gray-200' }}">
+                            class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'story' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Story
                         </button>
                     </div>
@@ -388,8 +388,8 @@ new #[Layout('layouts.app')] class extends Component {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div>
-                                <h3 class="font-medium text-gray-900">{{ $this->currentTheme->name }}</h3>
-                                <p class="text-sm text-gray-600">{{ $this->currentTheme->description }}</p>
+                                <h3 class="font-medium text-gray-900 dark:text-zinc-100">{{ $this->currentTheme->name }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-zinc-400">{{ $this->currentTheme->description }}</p>
                             </div>
                         </div>
                         <button wire:click="clearThemeFilter"
@@ -407,41 +407,41 @@ new #[Layout('layouts.app')] class extends Component {
                 $feedCurrentTheme = WeeklyTheme::current()->first();
             @endphp
             @if ($feedCurrentTheme)
-                <div class="bg-gray-50 border-b border-gray-100">
+                <div class="bg-gray-50 dark:bg-zinc-800 border-b border-gray-100 dark:border-zinc-800">
                     <div class="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6">
                         <div class="space-y-3 md:space-y-0 md:flex md:items-center md:justify-between">
                             <div class="flex items-start gap-3">
                                 <div class="flex-shrink-0">
                                     <div
-                                        class="w-8 h-8 md:w-10 md:h-10 bg-black text-white rounded-lg flex items-center justify-center text-xs font-medium">
+                                        class="w-8 h-8 md:w-10 md:h-10 bg-black text-white dark:bg-white dark:text-black rounded-lg flex items-center justify-center text-xs font-medium">
                                         T
                                     </div>
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex flex-wrap items-center gap-2 mb-1">
-                                        <h3 class="font-medium text-gray-900 text-sm md:text-base">
+                                        <h3 class="font-medium text-gray-900 dark:text-zinc-100 text-sm md:text-base">
                                             {{ $feedCurrentTheme->name }}</h3>
-                                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">This
+                                        <span class="text-xs bg-gray-200 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300 px-2 py-1 rounded-full">This
                                             Week</span>
                                         @if ($feedCurrentTheme->days_remaining > 0)
-                                            <span class="text-xs text-gray-500 hidden sm:inline">
+                                            <span class="text-xs text-gray-500 dark:text-zinc-400 hidden sm:inline">
                                                 {{ $feedCurrentTheme->days_remaining }}
                                                 day{{ $feedCurrentTheme->days_remaining == 1 ? '' : 's' }} left
                                             </span>
                                         @endif
                                     </div>
-                                    <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                                    <p class="text-xs md:text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
                                         {{ Str::limit($feedCurrentTheme->description, 100) }}
                                     </p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 md:gap-3 md:flex-shrink-0">
                                 <a href="{{ route('post.create') }}?theme={{ $feedCurrentTheme->slug }}"
-                                    class="bg-black text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium hover:bg-gray-800 transition-colors">
+                                    class="bg-black text-white dark:bg-white dark:text-black px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors">
                                     Share Story
                                 </a>
                                 <a href="{{ route('feed') }}?theme={{ $feedCurrentTheme->slug }}"
-                                    class="text-gray-600 text-xs md:text-sm font-medium hover:text-black transition-colors">
+                                    class="text-gray-600 dark:text-zinc-400 text-xs md:text-sm font-medium hover:text-black dark:hover:text-white transition-colors">
                                     Show Theme Posts →
                                 </a>
                             </div>
@@ -462,10 +462,10 @@ new #[Layout('layouts.app')] class extends Component {
                             @if ($index > 0 && $index % 10 === 0 && $showProgressMarker)
                                 <div class="flex items-center justify-center py-3 my-2">
                                     <div
-                                        class="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 rounded-full px-4 py-2 shadow-sm">
+                                        class="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800 rounded-full px-4 py-2 shadow-sm">
                                         <div class="flex items-center gap-2">
                                             <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                            <span class="text-xs text-gray-600 font-medium">
+                                            <span class="text-xs text-gray-600 dark:text-zinc-400 font-medium">
                                                 Story {{ $index + $totalViewedToday }} of
                                                 {{ $index + $totalViewedToday + 20 }} today
                                             </span>
@@ -473,28 +473,28 @@ new #[Layout('layouts.app')] class extends Component {
                                                 style="animation-delay: 0.5s"></div>
                                         </div>
                                         <div class="text-center mt-1">
-                                            <span class="text-[10px] text-gray-500">Keep scrolling for more →</span>
+                                            <span class="text-[10px] text-gray-500 dark:text-zinc-400">Keep scrolling for more →</span>
                                         </div>
                                     </div>
                                 </div>
                             @endif
 
                             <article
-                                class="border-b border-gray-50 pb-2 md:pb-3 last:border-b-0 hover:bg-gray-50/50 transition-colors duration-200 
-                                {{ $index % 2 === 1 ? 'bg-gray-50/20' : 'bg-white' }} px-2 md:px-3 py-2 rounded-sm">
+                                class="border-b border-gray-50 dark:border-zinc-800 pb-2 md:pb-3 last:border-b-0 hover:bg-gray-50/50 dark:hover:bg-zinc-800/50 transition-colors duration-200
+                                {{ $index % 2 === 1 ? 'bg-gray-50/20 dark:bg-zinc-900/20' : 'bg-white dark:bg-zinc-900' }} px-2 md:px-3 py-2 rounded-sm">
                                 <!-- Mobile-first metadata layout -->
                                 <div class="mb-2 space-y-1">
                                     <!-- Main metadata line -->
                                     <div class="flex items-center text-xs">
                                         <span
-                                            class="font-medium text-gray-700 text-xs">{{ '@' . $story->alias }}</span>
-                                        <span class="mx-2 text-gray-300">•</span>
+                                            class="font-medium text-gray-700 dark:text-zinc-300 text-xs">{{ '@' . $story->alias }}</span>
+                                        <span class="mx-2 text-gray-300 dark:text-zinc-600">•</span>
                                         <span
-                                            class="text-gray-500 text-xs">{{ $story->created_at->diffForHumans() }}</span>
+                                            class="text-gray-500 dark:text-zinc-400 text-xs">{{ $story->created_at->diffForHumans() }}</span>
                                         @if ($story->category)
-                                            <span class="mx-2 text-gray-300">•</span>
+                                            <span class="mx-2 text-gray-300 dark:text-zinc-600">•</span>
                                             <span
-                                                class="text-xs uppercase tracking-wide text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                                                class="text-xs uppercase tracking-wide text-gray-400 dark:text-zinc-400 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded">
                                                 {{ $story->category }}
                                             </span>
                                         @endif
@@ -504,8 +504,8 @@ new #[Layout('layouts.app')] class extends Component {
                                     @if ($story->theme)
                                         <div class="flex items-center">
                                             <a href="{{ route('theme.details', $story->theme->slug) }}"
-                                                class="inline-flex items-center text-xs bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-colors">
-                                                <span class="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                                class="inline-flex items-center text-xs bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 rounded-full hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors">
+                                                <span class="w-1.5 h-1.5 bg-white dark:bg-black rounded-full mr-2"></span>
                                                 {{ $story->theme->name }}
                                             </a>
                                         </div>
@@ -514,12 +514,12 @@ new #[Layout('layouts.app')] class extends Component {
 
                                 <a href="{{ route('post', $story->slug) }}" class="block">
                                     <h2
-                                        class="text-sm md:text-base lg:text-lg font-medium mb-1 leading-tight hover:text-gray-700 cursor-pointer transition-colors">
+                                        class="text-sm md:text-base lg:text-lg font-medium mb-1 leading-tight hover:text-gray-700 dark:hover:text-zinc-300 cursor-pointer transition-colors">
                                         {{ $story->title }}
                                     </h2>
                                 </a>
 
-                                <div class="text-xs text-gray-600 leading-snug mb-2">
+                                <div class="text-xs text-gray-600 dark:text-zinc-400 leading-snug mb-2">
                                     @php
                                         $preview = Str::limit(strip_tags($story->body), 150);
                                         $isLimited = strlen(strip_tags($story->body)) > 150;
@@ -528,7 +528,7 @@ new #[Layout('layouts.app')] class extends Component {
                                         {{ $preview }}
                                         @if ($isLimited)
                                             <a href="{{ route('post', $story->slug) }}"
-                                                class="text-gray-800 hover:text-black font-medium transition-colors">...Read
+                                                class="text-gray-800 dark:text-zinc-300 hover:text-black dark:hover:text-white font-medium transition-colors">...Read
                                                 more</a>
                                         @endif
                                     </div>
@@ -538,7 +538,7 @@ new #[Layout('layouts.app')] class extends Component {
                                 @if ($story->tags->isNotEmpty())
                                     <div class="flex flex-wrap gap-1 mb-2">
                                         @foreach ($story->tags->take(3) as $tag)
-                                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                                            <span class="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 px-2 py-1 rounded-full text-xs">
                                                 #{{ $tag->name }}
                                             </span>
                                         @endforeach
@@ -546,7 +546,7 @@ new #[Layout('layouts.app')] class extends Component {
                                 @endif
 
                                 <div class="flex items-center justify-between group">
-                                    <div class="flex items-center space-x-3 md:space-x-4 text-xs text-gray-500">
+                                    <div class="flex items-center space-x-3 md:space-x-4 text-xs text-gray-500 dark:text-zinc-400">
                                         <div class="flex items-center gap-1">
                                             <button wire:click="toggleVote({{ $story->id }}, 'up')"
                                                 class="hover:text-green-600 hover:bg-green-50 transition-all duration-200 p-1.5 rounded-full {{ $this->getUserVote($story->id) === 'up' ? 'text-green-600 bg-green-50' : '' }}">
@@ -560,7 +560,7 @@ new #[Layout('layouts.app')] class extends Component {
                                             </button>
                                         </div>
                                         <a href="{{ route('post', $story->slug) }}#comments"
-                                            class="flex items-center gap-1 hover:text-gray-800 transition-colors">
+                                            class="flex items-center gap-1 hover:text-gray-800 dark:hover:text-zinc-200 transition-colors">
                                             <span>💬</span>
                                             <span class="text-xs hidden sm:inline">{{ $story->comments->count() }}
                                                 comments</span>
@@ -578,7 +578,7 @@ new #[Layout('layouts.app')] class extends Component {
                                     <div
                                         class="hidden md:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')"
-                                            class="text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
+                                            class="text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800 flex items-center gap-1">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -588,13 +588,13 @@ new #[Layout('layouts.app')] class extends Component {
                                             Share
                                         </button>
                                         <a href="{{ route('post', $story->slug) }}"
-                                            class="text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100">
+                                            class="text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800">
                                             Read
                                         </a>
                                     </div>
                                     <!-- Mobile share button -->
                                     <button onclick="copyToClipboard('{{ route('post', $story->slug) }}')"
-                                        class="md:hidden text-gray-500 hover:text-black transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1">
+                                        class="md:hidden text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800 flex items-center gap-1">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -606,18 +606,18 @@ new #[Layout('layouts.app')] class extends Component {
 
                                 <!-- Inline Comments Preview -->
                                 @if ($story->comments->count() > 0)
-                                    <div class="mt-2 pt-2 border-t border-gray-50">
+                                    <div class="mt-2 pt-2 border-t border-gray-50 dark:border-zinc-800">
                                         <div class="space-y-1">
                                             @foreach ($story->comments->take(2) as $comment)
                                                 <div class="flex items-start gap-2 text-xs">
                                                     <div
-                                                        class="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center text-[10px] text-gray-600 flex-shrink-0">
+                                                        class="w-4 h-4 bg-gray-200 dark:bg-zinc-700 rounded-full flex items-center justify-center text-[10px] text-gray-600 dark:text-zinc-300 flex-shrink-0">
                                                         {{ strtoupper(substr($comment->alias, 0, 1)) }}
                                                     </div>
                                                     <div class="flex-1 min-w-0">
                                                         <span
-                                                            class="font-medium text-gray-700 text-[10px]">{{ '@' . $comment->alias }}</span>
-                                                        <p class="text-gray-600 line-clamp-2 leading-tight">
+                                                            class="font-medium text-gray-700 dark:text-zinc-300 text-[10px]">{{ '@' . $comment->alias }}</span>
+                                                        <p class="text-gray-600 dark:text-zinc-400 line-clamp-2 leading-tight">
                                                             {{ Str::limit(strip_tags($comment->body), 80) }}
                                                         </p>
                                                     </div>
@@ -631,7 +631,7 @@ new #[Layout('layouts.app')] class extends Component {
                                             @endforeach
                                             @if ($story->comments->count() > 2)
                                                 <a href="{{ route('post', $story->slug) }}#comments"
-                                                    class="text-[10px] text-gray-500 hover:text-gray-800 transition-colors">
+                                                    class="text-[10px] text-gray-500 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-zinc-200 transition-colors">
                                                     View {{ $story->comments->count() - 2 }} more comments →
                                                 </a>
                                             @endif
@@ -641,7 +641,7 @@ new #[Layout('layouts.app')] class extends Component {
                             </article>
                         @empty
                             <div class="text-center py-12">
-                                <p class="text-gray-500">No stories found for the selected criteria.</p>
+                                <p class="text-gray-500 dark:text-zinc-400">No stories found for the selected criteria.</p>
                             </div>
                         @endforelse
                     </div>
@@ -666,14 +666,14 @@ new #[Layout('layouts.app')] class extends Component {
                         <!-- Skeleton loading preview -->
                         <div wire:loading wire:target="loadMore" class="space-y-2">
                             @for ($i = 0; $i < 3; $i++)
-                                <div class="bg-gray-50/50 p-3 rounded-sm animate-pulse">
+                                <div class="bg-gray-50/50 dark:bg-zinc-800/50 p-3 rounded-sm animate-pulse">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <div class="w-4 h-4 bg-gray-200 rounded-full"></div>
-                                        <div class="h-3 bg-gray-200 rounded w-20"></div>
-                                        <div class="h-3 bg-gray-200 rounded w-16"></div>
+                                        <div class="w-4 h-4 bg-gray-200 dark:bg-zinc-700 rounded-full"></div>
+                                        <div class="h-3 bg-gray-200 dark:bg-zinc-700 rounded w-20"></div>
+                                        <div class="h-3 bg-gray-200 dark:bg-zinc-700 rounded w-16"></div>
                                     </div>
-                                    <div class="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                                    <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                                    <div class="h-4 bg-gray-200 dark:bg-zinc-700 rounded w-full mb-2"></div>
+                                    <div class="h-3 bg-gray-200 dark:bg-zinc-700 rounded w-3/4"></div>
                                 </div>
                             @endfor
                         </div>
@@ -686,27 +686,27 @@ new #[Layout('layouts.app')] class extends Component {
                 <!-- Right Sidebar -->
                 <div class="hidden lg:block space-y-4 sticky top-35 self-start">
                     <!-- Top Stories -->
-                    <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg">
                         <h3 class="text-xs font-medium mb-2">Top Picks</h3>
                         <div class="space-y-2">
                             @foreach ($this->topStories as $story)
-                                <article class="border-b border-gray-200 pb-2 last:border-b-0">
+                                <article class="border-b border-gray-200 dark:border-zinc-700 pb-2 last:border-b-0">
                                     <div class="flex items-center gap-2 mb-1">
                                         <span
-                                            class="text-xs font-medium text-gray-700">{{ '@' . $story->alias }}</span>
+                                            class="text-xs font-medium text-gray-700 dark:text-zinc-300">{{ '@' . $story->alias }}</span>
                                         @if ($story->category)
-                                            <span class="text-[10px] text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
+                                            <span class="text-[10px] text-gray-400 dark:text-zinc-400 bg-gray-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded">
                                                 {{ $story->category }}
                                             </span>
                                         @endif
                                     </div>
                                     <a href="{{ route('post', $story->slug) }}">
                                         <h4
-                                            class="text-xs font-medium text-gray-900 mb-1 leading-tight hover:text-gray-700 transition-colors">
+                                            class="text-xs font-medium text-gray-900 dark:text-zinc-100 mb-1 leading-tight hover:text-gray-700 dark:hover:text-zinc-300 transition-colors">
                                             {{ Str::limit($story->title, 60) }}
                                         </h4>
                                     </a>
-                                    <div class="flex items-center gap-2 text-[10px] text-gray-500">
+                                    <div class="flex items-center gap-2 text-[10px] text-gray-500 dark:text-zinc-400">
                                         <span class="flex items-center gap-1">
                                             <span>↑</span>
                                             <span>{{ $story->upvotes }}</span>
@@ -725,23 +725,23 @@ new #[Layout('layouts.app')] class extends Component {
                     <div class="bg-gradient-to-br from-gray-900 to-black p-4 rounded-lg text-white">
                         <div class="text-center">
                             <h3 class="text-xs font-medium mb-2">Share Your Story</h3>
-                            <p class="text-[10px] text-gray-300 mb-3">Your voice matters. Post anonymously and connect
+                            <p class="text-[10px] text-gray-300 dark:text-zinc-400 mb-3">Your voice matters. Post anonymously and connect
                                 with
                                 others who understand.</p>
                             <a href="/post/create"
-                                class="inline-block bg-white text-black px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors">
+                                class="inline-block bg-white text-black dark:bg-black dark:text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors">
                                 Write Your Story
                             </a>
                         </div>
                     </div>
 
                     <!-- Trending Topics -->
-                    <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg">
                         <h3 class="text-xs font-medium mb-2">Trending Topics</h3>
                         <div class="flex flex-wrap gap-1">
                             @foreach ($this->trendingTags as $tag)
                                 <button wire:click="setCategory('{{ $tag->slug }}')"
-                                    class="bg-white border border-gray-200 px-2 py-1 rounded-full text-[10px] text-gray-700 hover:border-gray-300 cursor-pointer transition-colors {{ $selectedCategory === $tag->slug ? 'bg-black text-white border-black' : '' }}">
+                                    class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 px-2 py-1 rounded-full text-[10px] text-gray-700 dark:text-zinc-300 hover:border-gray-300 dark:hover:border-zinc-600 cursor-pointer transition-colors {{ $selectedCategory === $tag->slug ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white' : '' }}">
                                     #{{ $tag->name }}
                                 </button>
                             @endforeach
@@ -749,14 +749,14 @@ new #[Layout('layouts.app')] class extends Component {
                     </div>
 
                     <!-- Community Guidelines -->
-                    <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg">
                         <h3 class="text-xs font-medium mb-2">Community</h3>
-                        <div class="space-y-1 text-[10px] text-gray-600">
-                            <a href="/rules" class="block hover:text-black transition-colors">Community
+                        <div class="space-y-1 text-[10px] text-gray-600 dark:text-zinc-400">
+                            <a href="/rules" class="block hover:text-black dark:hover:text-white transition-colors">Community
                                 Guidelines</a>
-                            <a href="/about" class="block hover:text-black transition-colors">About
+                            <a href="/about" class="block hover:text-black dark:hover:text-white transition-colors">About
                                 Bluntly</a>
-                            <a href="/privacy" class="block hover:text-black transition-colors">Privacy Policy</a>
+                            <a href="/privacy" class="block hover:text-black dark:hover:text-white transition-colors">Privacy Policy</a>
                         </div>
                     </div>
                 </div>
@@ -766,7 +766,7 @@ new #[Layout('layouts.app')] class extends Component {
 
     <!-- Quick Post FAB -->
     <button @click="$dispatch('open-quick-post')"
-            class="fab-button fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 w-14 h-14 md:w-16 md:h-16 bg-black text-white rounded-full shadow-lg hover:bg-gray-800 transition-all duration-200 flex items-center justify-center group">
+            class="fab-button fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 w-14 h-14 md:w-16 md:h-16 bg-black text-white dark:bg-white dark:text-black rounded-full shadow-lg hover:bg-gray-800 dark:hover:bg-zinc-200 transition-all duration-200 flex items-center justify-center group">
         <svg class="w-6 h-6 md:w-7 md:h-7 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
