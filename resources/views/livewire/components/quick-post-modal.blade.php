@@ -189,11 +189,20 @@ new class extends Component {
     }
 }; ?>
 
-<div x-data="{ show: @entangle('isOpen') }"
-     @keydown.escape.window="if (show) { show = false; }"
-     @open-quick-post.window="show = true"
+<div x-data="{ show: false }"
+     @keydown.escape.window="if (show) { show = false; $wire.closeModal(); }"
+     @open-quick-post.window="show = true; $wire.openModal()"
      @close-quick-post.window="show = false"
-     x-init="$watch('show', value => { if (!value) document.body.style.overflow = ''; else document.body.style.overflow = 'hidden'; })">
+     x-init="
+         $watch('show', value => {
+             if (!value) {
+                 document.body.style.overflow = '';
+             } else {
+                 document.body.style.overflow = 'hidden';
+             }
+         });
+         Livewire.on('modal-opened', () => { show = true; });
+     ">
     <!-- Modal Backdrop -->
     <div x-show="show"
          x-transition:enter="transition ease-out duration-200"
@@ -206,7 +215,7 @@ new class extends Component {
          style="display: none;">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm modal-backdrop" @click="show = false"></div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm modal-backdrop" @click="show = false; $wire.closeModal()"></div>
 
         <!-- Modal Container -->
         <div class="fixed inset-0 overflow-y-auto">
@@ -225,7 +234,7 @@ new class extends Component {
                     <div class="sticky top-0 bg-white border-b border-gray-200 px-4 md:px-6 py-4 md:rounded-t-2xl">
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-medium text-gray-900">Quick Post</h2>
-                            <button @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors p-2">
+                            <button @click="show = false; $wire.closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-2">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -419,7 +428,7 @@ new class extends Component {
                     <!-- Footer Actions -->
                     <div class="sticky bottom-0 bg-white border-t border-gray-200 px-4 md:px-6 py-4 md:rounded-b-2xl">
                         <div class="flex items-center justify-end gap-3">
-                            <button type="button" @click="show = false"
+                            <button type="button" @click="show = false; $wire.closeModal()"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-black transition-colors">
                                 Cancel
                             </button>

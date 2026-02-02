@@ -7,6 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'Bluntly - Say it. As it is.')</title>
 
+    <!-- Dark mode script - runs before page render to prevent flash -->
+    <script>
+        (function() {
+            const darkMode = localStorage.getItem('_x_darkMode');
+            if (darkMode === 'true' || (darkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('meta_description', 'Anonymous stories, confessions, and rants. Share your truth without revealing your identity on Bluntly.')">
     <meta name="keywords" content="@yield('meta_keywords', 'anonymous stories, confessions, rants, anonymous posting, unfiltered content, share secrets')">

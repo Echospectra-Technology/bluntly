@@ -80,6 +80,11 @@
         border-color: var(--color-zinc-800, currentColor);
     }
 
+    /* Alpine.js cloak */
+    [x-cloak] {
+        display: none !important;
+    }
+
     /* Doomscroll optimizations */
     html {
         scroll-behavior: smooth;

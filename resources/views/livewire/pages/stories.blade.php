@@ -337,18 +337,18 @@ new #[Layout('layouts.app')] class extends Component {
                 <div class="space-y-3">
                     <!-- Sort Options -->
                     <div class="flex items-center space-x-1 overflow-x-auto pb-1">
-                        <button wire:click="setFilter('newest')"
+                        <button type="button" wire:click="setFilter('newest')"
                             class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'newest' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white' }}">
                             <span class="flex items-center gap-1">
                                 <span>✨</span>
                                 For You
                             </span>
                         </button>
-                        <button wire:click="setFilter('trending')"
+                        <button type="button" wire:click="setFilter('trending')"
                             class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'trending' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white' }}">
                             Trending
                         </button>
-                        <button wire:click="setFilter('popular')"
+                        <button type="button" wire:click="setFilter('popular')"
                             class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentFilter === 'popular' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white' }}">
                             Popular
                         </button>
@@ -356,23 +356,23 @@ new #[Layout('layouts.app')] class extends Component {
 
                     <!-- Category Filter -->
                     <div class="flex items-center space-x-1 overflow-x-auto pb-1">
-                        <button wire:click="setCategory('all')"
+                        <button type="button" wire:click="setCategory('all')"
                             class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'all' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             All
                         </button>
-                        <button wire:click="setCategory('confession')"
+                        <button type="button" wire:click="setCategory('confession')"
                             class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'confession' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Confession
                         </button>
-                        <button wire:click="setCategory('rant')"
+                        <button type="button" wire:click="setCategory('rant')"
                             class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'rant' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Rant
                         </button>
-                        <button wire:click="setCategory('gist')"
+                        <button type="button" wire:click="setCategory('gist')"
                             class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'gist' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Gist
                         </button>
-                        <button wire:click="setCategory('story')"
+                        <button type="button" wire:click="setCategory('story')"
                             class="flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedCategory === 'story' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-zinc-700' }}">
                             Story
                         </button>
