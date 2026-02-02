@@ -774,7 +774,7 @@ new #[Layout('layouts.app')] class extends Component {
     </button>
 
     <!-- Quick Post Modal -->
-    <livewire:components.quick-post-modal />
+    <livewire:components.quick-post-modal wire:key="quick-post-modal" />
 
     <x-footer />
 

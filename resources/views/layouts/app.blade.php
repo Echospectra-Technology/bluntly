@@ -69,13 +69,13 @@
     @livewireStyles
 </head>
 
-<body class="bg-white dark:bg-zinc-900 text-black dark:text-zinc-100 font-sans antialiased" x-data x-init="$store.darkMode.init()">
+<body class="bg-white dark:bg-zinc-900 text-black dark:text-zinc-100 font-sans antialiased">
     {{ $slot }}
 
     <!-- Toast Notifications -->
     <x-toast />
 
-    @livewireScripts
+    @livewireScriptConfig
 </body>
 
 </html>
