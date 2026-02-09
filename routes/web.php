@@ -132,6 +132,9 @@ Route::prefix('personas')->name('personas.')->middleware('auth')->group(function
     Route::delete('/{persona}', [\App\Http\Controllers\PersonaController::class, 'destroy'])->name('destroy');
 });
 
+// AI Action routes - Manual trigger
+Route::post('/ai/generate-post', [\App\Http\Controllers\AiActionController::class, 'generatePost'])->name('ai.generate-post');
+
 // Anonymous Authentication routes (for legacy content viewing)
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::get('/signup', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'showSignupForm'])->name('signup');

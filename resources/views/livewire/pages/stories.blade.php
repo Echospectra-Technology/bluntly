@@ -764,6 +764,73 @@ new #[Layout('layouts.app')] class extends Component {
         </div>
     </div>
 
+    <!-- Generate Post FAB -->
+    <div x-data="{ generating: false, message: '', messageType: '' }">
+        <button @click="
+            if (generating) return;
+            generating = true;
+            fetch('{{ route('ai.generate-post') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                message = data.message;
+                messageType = data.success ? 'success' : 'error';
+                setTimeout(() => {
+                    message = '';
+                    messageType = '';
+                }, 3000);
+                if (data.success) {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                message = 'Failed to generate post. Please try again.';
+                messageType = 'error';
+                setTimeout(() => {
+                    message = '';
+                    messageType = '';
+                }, 3000);
+            })
+            .finally(() => {
+                generating = false;
+            });
+        "
+        :disabled="generating"
+        class="fab-button fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 w-14 h-14 md:w-16 md:h-16 bg-black text-white dark:bg-white dark:text-black rounded-full shadow-lg hover:bg-gray-800 dark:hover:bg-zinc-200 transition-all duration-200 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg x-show="!generating" class="w-6 h-6 md:w-7 md:h-7 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            <svg x-show="generating" class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse" x-show="!generating"></span>
+        </button>
+
+        <!-- Toast Notification -->
+        <div x-show="message"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-2"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 transform translate-y-0"
+             x-transition:leave-end="opacity-0 transform translate-y-2"
+             class="fixed bottom-24 right-4 md:bottom-28 md:right-8 z-50 max-w-sm"
+             style="display: none;">
+            <div class="rounded-lg shadow-lg p-4"
+                 :class="messageType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'">
+                <p class="text-sm font-medium" x-text="message"></p>
+            </div>
+        </div>
+    </div>
+
     <x-footer />
 
     <script>
