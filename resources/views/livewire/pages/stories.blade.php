@@ -764,18 +764,6 @@ new #[Layout('layouts.app')] class extends Component {
         </div>
     </div>
 
-    <!-- Quick Post FAB -->
-    <button @click="$dispatch('open-quick-post')"
-            class="fab-button fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 w-14 h-14 md:w-16 md:h-16 bg-black text-white dark:bg-white dark:text-black rounded-full shadow-lg hover:bg-gray-800 dark:hover:bg-zinc-200 transition-all duration-200 flex items-center justify-center group">
-        <svg class="w-6 h-6 md:w-7 md:h-7 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
-    </button>
-
-    <!-- Quick Post Modal -->
-    <livewire:components.quick-post-modal wire:key="quick-post-modal" />
-
     <x-footer />
 
     <script>

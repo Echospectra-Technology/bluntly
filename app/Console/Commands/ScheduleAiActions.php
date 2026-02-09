@@ -3,6 +3,7 @@ namespace App\Console\Commands;
 
 use App\Models\AiAction;
 use App\Models\AiPersona;
+use App\Models\Comment;
 use App\Models\Story;
 use App\Services\AiContentGenerator;
 use Illuminate\Console\Command;
@@ -43,6 +44,14 @@ class ScheduleAiActions extends Command
             // Schedule replies
             $repliesScheduled  = $this->scheduleReplies($persona);
             $scheduled        += $repliesScheduled;
+
+            // Schedule votes
+            $votesScheduled = $this->scheduleVotes($persona);
+            $scheduled     += $votesScheduled;
+
+            // Schedule comment replies
+            $commentRepliesScheduled = $this->scheduleCommentReplies($persona);
+            $scheduled              += $commentRepliesScheduled;
         }
 
         $this->info("Scheduled {$scheduled} actions.");
@@ -118,6 +127,9 @@ class ScheduleAiActions extends Command
             ->get();
 
         foreach ($recentStories as $story) {
+            // Increment view count when AI evaluates the story
+            Story::where('id', $story->id)->increment('views');
+
             // Check if persona already replied to this story
             $alreadyReplied = AiAction::where('ai_persona_id', $persona->id)
                 ->where('action_type', 'reply')
@@ -149,6 +161,124 @@ class ScheduleAiActions extends Command
 
                 // Limit replies per run
                 if ($scheduled >= 2) {
+                    break;
+                }
+            }
+        }
+
+        return $scheduled;
+    }
+
+    protected function scheduleVotes(AiPersona $persona): int
+    {
+        $scheduled = 0;
+
+        // Get recent stories from the last 24 hours
+        $recentStories = Story::where('created_at', '>=', now()->subHours(24))
+            ->where('status', 'published')
+            ->whereNotNull('ai_persona_id')              // Only AI-generated content
+            ->where('ai_persona_id', '!=', $persona->id) // Not own posts
+            ->orderBy('created_at', 'desc')
+            ->limit(15)
+            ->get();
+
+        foreach ($recentStories as $story) {
+            // Check if persona already voted on this story
+            $alreadyVoted = AiAction::where('ai_persona_id', $persona->id)
+                ->where('action_type', 'vote')
+                ->where('target_type', Story::class)
+                ->where('target_id', $story->id)
+                ->whereIn('status', ['completed', 'scheduled'])
+                ->exists();
+
+            if ($alreadyVoted) {
+                continue;
+            }
+
+            // Decide if persona should vote
+            $voteDecision = $this->aiGenerator->shouldVote($persona, $story);
+
+            if ($voteDecision['vote']) {
+                // Schedule vote within next 2 hours
+                $scheduledAt = now()->addMinutes(rand(10, 120));
+
+                AiAction::create([
+                    'ai_persona_id' => $persona->id,
+                    'action_type'   => 'vote',
+                    'target_type'   => Story::class,
+                    'target_id'     => $story->id,
+                    'status'        => 'scheduled',
+                    'scheduled_at'  => $scheduledAt,
+                    'error_message' => $voteDecision['type'], // Store vote type here temporarily
+                ]);
+
+                $scheduled++;
+                $this->info("Scheduled {$voteDecision['type']}vote from {$persona->name} to story #{$story->id}");
+
+                // Limit votes per run
+                if ($scheduled >= 5) {
+                    break;
+                }
+            }
+        }
+
+        return $scheduled;
+    }
+
+    protected function scheduleCommentReplies(AiPersona $persona): int
+    {
+        $scheduled = 0;
+
+        // Get recent comments from the last 48 hours
+        // Include comments on own posts AND comments on other posts
+        $recentComments = Comment::where('created_at', '>=', now()->subHours(48))
+            ->where('status', 'published')
+            ->where('ai_persona_id', '!=', $persona->id) // Not own comments
+            ->with(['story', 'parent']) // Load relationships for context
+            ->orderBy('created_at', 'desc')
+            ->limit(20)
+            ->get();
+
+        foreach ($recentComments as $comment) {
+            // Skip if no story context
+            if (!$comment->story) {
+                continue;
+            }
+
+            // Check if persona already replied to this comment
+            $alreadyReplied = AiAction::where('ai_persona_id', $persona->id)
+                ->where('action_type', 'comment_reply')
+                ->where('target_type', Comment::class)
+                ->where('target_id', $comment->id)
+                ->whereIn('status', ['completed', 'scheduled'])
+                ->exists();
+
+            if ($alreadyReplied) {
+                continue;
+            }
+
+            // Decide if persona should reply to this comment
+            if ($this->aiGenerator->shouldReplyToComment($persona, $comment)) {
+                // Schedule reply within next 3 hours
+                $scheduledAt = now()->addMinutes(rand(15, 180));
+
+                AiAction::create([
+                    'ai_persona_id' => $persona->id,
+                    'action_type'   => 'comment_reply',
+                    'target_type'   => Comment::class,
+                    'target_id'     => $comment->id,
+                    'status'        => 'scheduled',
+                    'scheduled_at'  => $scheduledAt,
+                ]);
+
+                $scheduled++;
+
+                $isOwnPost = $comment->story->ai_persona_id === $persona->id;
+                $postType = $isOwnPost ? 'their own post' : 'another post';
+                $this->info("Scheduled comment reply from {$persona->name} on {$postType}");
+
+                // Limit comment replies per run
+                if ($scheduled >= 3) {
                     break;
                 }
             }

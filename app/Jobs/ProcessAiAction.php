@@ -5,6 +5,8 @@ namespace App\Jobs;
 use App\Models\AiAction;
 use App\Models\Comment;
 use App\Models\Story;
+use App\Models\Tag;
+use App\Models\Vote;
 use App\Models\WeeklyTheme;
 use App\Services\AiContentGenerator;
 use Illuminate\Bus\Queueable;
@@ -35,6 +37,10 @@ class ProcessAiAction implements ShouldQueue
                 $this->handlePost($aiGenerator);
             } elseif ($this->action->action_type === 'reply') {
                 $this->handleReply($aiGenerator);
+            } elseif ($this->action->action_type === 'vote') {
+                $this->handleVote($aiGenerator);
+            } elseif ($this->action->action_type === 'comment_reply') {
+                $this->handleCommentReply($aiGenerator);
             }
 
             $this->action->markAsCompleted();
@@ -57,15 +63,30 @@ class ProcessAiAction implements ShouldQueue
         // Create story
         $story = Story::create([
             'ai_persona_id' => $persona->id,
-            'title' => null,
+            'title' => $postData['title'],
             'body' => $postData['content'],
-            'slug' => Str::slug(Str::limit($postData['content'], 50)) . '-' . Str::random(8),
+            'slug' => Str::slug(Str::limit($postData['title'] ?? $postData['content'], 50)) . '-' . Str::random(8),
             'alias' => $persona->username,
             'cookie_hash' => null,
             'status' => 'published',
             'category' => $postData['category'],
             'theme_id' => $theme?->id,
         ]);
+
+        // Attach tags to story
+        if (!empty($postData['tags'])) {
+            $tagIds = [];
+            foreach ($postData['tags'] as $tagName) {
+                // Find or create tag
+                $tag = Tag::firstOrCreate(
+                    ['slug' => Str::slug($tagName)],
+                    ['name' => $tagName]
+                );
+                $tagIds[] = $tag->id;
+            }
+            // Attach tags to story
+            $story->tags()->attach($tagIds);
+        }
 
         // Update persona stats
         $persona->incrementPostCount();
@@ -88,6 +109,78 @@ class ProcessAiAction implements ShouldQueue
             'story_id' => $target->id,
             'ai_persona_id' => $persona->id,
             'parent_id' => null,
+            'body' => $content,
+            'alias' => $persona->username,
+            'cookie_hash' => null,
+            'status' => 'published',
+        ]);
+
+        // Update persona stats
+        $persona->incrementReplyCount();
+    }
+
+    protected function handleVote(AiContentGenerator $aiGenerator): void
+    {
+        $persona = $this->action->aiPersona;
+        $target = $this->action->target;
+
+        if (!$target) {
+            throw new \Exception('Vote target not found');
+        }
+
+        // Get vote type from error_message field (temporary storage)
+        $voteType = $this->action->error_message; // 'up' or 'down'
+
+        if (!in_array($voteType, ['up', 'down'])) {
+            throw new \Exception('Invalid vote type');
+        }
+
+        // Create vote record
+        Vote::create([
+            'item_type' => Story::class,
+            'item_id' => $target->id,
+            'value' => $voteType,
+            'cookie_hash' => null, // AI votes don't use cookies
+            'created_at' => now(),
+        ]);
+
+        // Update story vote counts
+        $upvotes = Vote::where('item_type', Story::class)
+            ->where('item_id', $target->id)
+            ->where('value', 'up')
+            ->count();
+
+        $downvotes = Vote::where('item_type', Story::class)
+            ->where('item_id', $target->id)
+            ->where('value', 'down')
+            ->count();
+
+        Story::where('id', $target->id)->update([
+            'upvotes' => $upvotes,
+            'downvotes' => $downvotes,
+        ]);
+
+        // Update persona stats
+        $persona->incrementVotesGiven();
+    }
+
+    protected function handleCommentReply(AiContentGenerator $aiGenerator): void
+    {
+        $persona = $this->action->aiPersona;
+        $targetComment = $this->action->target;
+
+        if (!$targetComment) {
+            throw new \Exception('Comment reply target not found');
+        }
+
+        // Generate reply content
+        $content = $aiGenerator->generateCommentReply($persona, $targetComment);
+
+        // Create nested comment
+        Comment::create([
+            'story_id' => $targetComment->story_id,
+            'ai_persona_id' => $persona->id,
+            'parent_id' => $targetComment->id, // This makes it a nested reply
             'body' => $content,
             'alias' => $persona->username,
             'cookie_hash' => null,

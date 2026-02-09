@@ -99,4 +99,11 @@ class AiPersona extends Model
         $stats['votes_received'] = ($stats['votes_received'] ?? 0) + 1;
         $this->update(['stats' => $stats]);
     }
+
+    public function incrementVotesGiven()
+    {
+        $stats = $this->stats ?? [];
+        $stats['total_votes_given'] = ($stats['total_votes_given'] ?? 0) + 1;
+        $this->update(['stats' => $stats]);
+    }
 }

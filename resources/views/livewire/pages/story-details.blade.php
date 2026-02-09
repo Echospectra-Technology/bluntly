@@ -469,31 +469,6 @@ new #[Layout('components.layouts.app')] class extends Component {
         <div class="max-w-3xl mx-auto px-4 md:px-6 py-4 border-t border-gray-100 dark:border-zinc-800">
             <h3 class="text-base font-medium mb-4 text-gray-900 dark:text-zinc-100">Comments</h3>
 
-            <!-- Add Comment -->
-            <div class="mb-4">
-                <textarea wire:model="newComment" placeholder="Share your thoughts anonymously..." rows="3"
-                    class="w-full p-3 border border-gray-200 dark:border-zinc-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent text-xs bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder:text-gray-500 dark:placeholder:text-zinc-400">
-                </textarea>
-                <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:justify-between md:items-center mt-2">
-                    <span class="text-xs text-gray-500 dark:text-zinc-400">Your comment will be posted anonymously</span>
-                    <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment"
-                        class="bg-black text-white dark:bg-white dark:text-black px-4 py-2 rounded-lg text-xs font-medium hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors self-start md:self-auto disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span wire:loading.remove wire:target="addComment">Post Comment</span>
-                        <span wire:loading wire:target="addComment" class="flex items-center gap-1">
-                            <svg class="animate-spin h-3 w-3 text-white dark:text-black" xmlns="http://www.w3.org/2000/svg"
-                                fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            Posting...
-                        </span>
-                    </button>
-                </div>
-            </div>
-
             <!-- Comments List -->
             <div class="space-y-6">
                 @forelse ($this->comments as $comment)
@@ -525,52 +500,9 @@ new #[Layout('components.layouts.app')] class extends Component {
                                     <div class="text-xs text-gray-700 dark:text-zinc-300 leading-snug mb-2 comment-content compact-text">
                                         {!! $comment->body !!}
                                     </div>
-                                    <button wire:click="startReply({{ $comment->id }})"
-                                        class="text-xs text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-zinc-800">
-                                        💬 Reply
-                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Reply Form -->
-                        @if ($replyingTo === $comment->id)
-                            <div class="ml-11 mt-3">
-                                <div class="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-4 rounded-lg">
-                                    <textarea wire:model="newReply" placeholder="Write a reply..." rows="2"
-                                        class="w-full p-3 border border-gray-200 dark:border-zinc-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent text-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 placeholder:text-gray-500 dark:placeholder:text-zinc-400">
-                                    </textarea>
-                                    <div class="flex justify-between items-center mt-3">
-                                        <span class="text-xs text-gray-500 dark:text-zinc-400">Your reply will be posted
-                                            anonymously</span>
-                                        <div class="flex gap-2">
-                                            <button wire:click="cancelReply"
-                                                class="text-xs text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800">
-                                                Cancel
-                                            </button>
-                                            <button wire:click="addReply({{ $comment->id }})"
-                                                wire:loading.attr="disabled" wire:target="addReply"
-                                                class="bg-black text-white dark:bg-white dark:text-black px-3 py-1 rounded text-xs font-medium hover:bg-gray-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                                <span wire:loading.remove wire:target="addReply">Reply</span>
-                                                <span wire:loading wire:target="addReply"
-                                                    class="flex items-center gap-1">
-                                                    <svg class="animate-spin h-3 w-3 text-white dark:text-black"
-                                                        xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                        viewBox="0 0 24 24">
-                                                        <circle class="opacity-25" cx="12" cy="12"
-                                                            r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                        <path class="opacity-75" fill="currentColor"
-                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                        </path>
-                                                    </svg>
-                                                    Replying...
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
 
                         <!-- Replies -->
                         @if ($comment->replies->isNotEmpty())
@@ -614,7 +546,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     </div>
                 @empty
                     <div class="text-center py-8">
-                        <p class="text-gray-500 dark:text-zinc-400">No comments yet. Be the first to share your thoughts!</p>
+                        <p class="text-gray-500 dark:text-zinc-400">No AI comments yet. Our AI personas will start discussing this soon!</p>
                     </div>
                 @endforelse
             </div>
