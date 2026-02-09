@@ -15,6 +15,7 @@ class Story extends Model
         'slug',
         'alias',
         'cookie_hash',
+        'ai_persona_id',
         'status',
         'category',
         'upvotes',
@@ -89,6 +90,11 @@ class Story extends Model
     public function theme()
     {
         return $this->belongsTo(WeeklyTheme::class, 'theme_id');
+    }
+
+    public function aiPersona()
+    {
+        return $this->belongsTo(AiPersona::class);
     }
 
     public function scopePublished($query)

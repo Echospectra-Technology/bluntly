@@ -11,6 +11,7 @@ class Comment extends Model
 
     protected $fillable = [
         'story_id',
+        'ai_persona_id',
         'parent_id',
         'body',
         'alias',
@@ -43,6 +44,11 @@ class Comment extends Model
     public function story()
     {
         return $this->belongsTo(Story::class);
+    }
+
+    public function aiPersona()
+    {
+        return $this->belongsTo(AiPersona::class);
     }
 
     public function parent()

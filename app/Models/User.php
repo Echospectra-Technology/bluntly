@@ -48,6 +48,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's AI personas
+     */
+    public function aiPersonas()
+    {
+        return $this->hasMany(AiPersona::class);
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string

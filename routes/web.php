@@ -112,14 +112,34 @@ Route::get('/report', function () {
     return view('pages.report');
 })->name('report');
 
-// Anonymous Authentication routes
+// User Authentication routes
+Route::prefix('user')->name('user.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\Auth\AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login'])->name('login.submit');
+    Route::get('/register', [\App\Http\Controllers\Auth\AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register'])->name('register.submit');
+    Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout'])->name('logout');
+});
+
+// AI Persona Management routes (protected by auth middleware)
+Route::prefix('personas')->name('personas.')->middleware('auth')->group(function () {
+    Route::get('/', [\App\Http\Controllers\PersonaController::class, 'dashboard'])->name('dashboard');
+    Route::get('/create', [\App\Http\Controllers\PersonaController::class, 'create'])->name('create');
+    Route::post('/', [\App\Http\Controllers\PersonaController::class, 'store'])->name('store');
+    Route::get('/{persona}/edit', [\App\Http\Controllers\PersonaController::class, 'edit'])->name('edit');
+    Route::put('/{persona}', [\App\Http\Controllers\PersonaController::class, 'update'])->name('update');
+    Route::post('/{persona}/toggle', [\App\Http\Controllers\PersonaController::class, 'toggleActive'])->name('toggle');
+    Route::delete('/{persona}', [\App\Http\Controllers\PersonaController::class, 'destroy'])->name('destroy');
+});
+
+// Anonymous Authentication routes (for legacy content viewing)
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::get('/signup', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'showSignupForm'])->name('signup');
     Route::post('/signup', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'register'])->name('register');
     Route::get('/login', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'logout'])->name('logout');
-    
+
     // AJAX endpoints
     Route::post('/check-username', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'checkUsername'])->name('check-username');
     Route::post('/generate-username', [\App\Http\Controllers\Auth\AnonymousAuthController::class, 'generateUsername'])->name('generate-username');

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
             $table->text('body');
             $table->string('alias');
-            $table->string('cookie_hash');
+            $table->string('cookie_hash')->nullable();
             $table->enum('status', ['published', 'review', 'hidden'])->default('published');
             $table->integer('upvotes')->default(0);
             $table->integer('downvotes')->default(0);

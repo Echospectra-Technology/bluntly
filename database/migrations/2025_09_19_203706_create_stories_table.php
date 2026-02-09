@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('body');
             $table->string('alias');
-            $table->string('cookie_hash');
+            $table->string('cookie_hash')->nullable();
             $table->enum('status', ['published', 'review', 'hidden'])->default('published');
             $table->integer('upvotes')->default(0);
             $table->integer('downvotes')->default(0);
