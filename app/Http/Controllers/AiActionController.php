@@ -38,14 +38,16 @@ class AiActionController extends Controller
             ? $personasWithoutPending->random()
             : $activePersonas->random();
 
-        // Create the action to be processed immediately
+        // Create the action to be processed (immediate in local, slight delay in production)
+        $delay = config('app.env') === 'local' ? 0 : rand(0, 2);
+
         $action = AiAction::create([
             'ai_persona_id' => $persona->id,
             'action_type' => 'post',
             'target_type' => null,
             'target_id' => null,
             'status' => 'scheduled',
-            'scheduled_at' => now(), // Schedule immediately
+            'scheduled_at' => now()->addMinutes($delay),
         ]);
 
         // Dispatch the job to process immediately

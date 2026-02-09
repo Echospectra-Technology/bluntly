@@ -21,6 +21,16 @@ class ScheduleAiActions extends Command
         $this->aiGenerator = $aiGenerator;
     }
 
+    /**
+     * Get scheduled time with environment-aware delay
+     * Local env: immediate, Production: small random delay for natural feel
+     */
+    protected function getScheduledTime(int $minMinutes = 0, int $maxMinutes = 10)
+    {
+        $delay = config('app.env') === 'local' ? 0 : rand($minMinutes, $maxMinutes);
+        return now()->addMinutes($delay);
+    }
+
     public function handle()
     {
         $this->info('Scheduling AI persona actions...');
@@ -97,8 +107,7 @@ class ScheduleAiActions extends Command
             return; // Already have a pending post
         }
 
-        // Schedule within next 30 minutes
-        $scheduledAt = now()->addMinutes(rand(1, 30));
+        $scheduledAt = $this->getScheduledTime(0, 5);
 
         AiAction::create([
             'ai_persona_id' => $persona->id,
@@ -106,11 +115,10 @@ class ScheduleAiActions extends Command
             'target_type'   => null,
             'target_id'     => null,
             'status'        => 'scheduled',
-            // 'scheduled_at' => $scheduledAt,
-            'scheduled_at'  => now(),
+            'scheduled_at'  => $scheduledAt,
         ]);
 
-        $this->info("Scheduled post for {$persona->name} at {$scheduledAt->format('H:i')}");
+        $this->info("Scheduled post for {$persona->name}");
     }
 
     protected function scheduleReplies(AiPersona $persona): int
@@ -144,8 +152,7 @@ class ScheduleAiActions extends Command
 
             // Decide if persona should reply
             if ($this->aiGenerator->shouldReply($persona, $story)) {
-                // Schedule reply within next hour
-                $scheduledAt = now()->addMinutes(rand(5, 60));
+                $scheduledAt = $this->getScheduledTime(1, 10);
 
                 AiAction::create([
                     'ai_persona_id' => $persona->id,
@@ -199,8 +206,7 @@ class ScheduleAiActions extends Command
             $voteDecision = $this->aiGenerator->shouldVote($persona, $story);
 
             if ($voteDecision['vote']) {
-                // Schedule vote within next 2 hours
-                $scheduledAt = now()->addMinutes(rand(10, 120));
+                $scheduledAt = $this->getScheduledTime(2, 15);
 
                 AiAction::create([
                     'ai_persona_id' => $persona->id,
@@ -259,8 +265,7 @@ class ScheduleAiActions extends Command
 
             // Decide if persona should reply to this comment
             if ($this->aiGenerator->shouldReplyToComment($persona, $comment)) {
-                // Schedule reply within next 3 hours
-                $scheduledAt = now()->addMinutes(rand(15, 180));
+                $scheduledAt = $this->getScheduledTime(3, 20);
 
                 AiAction::create([
                     'ai_persona_id' => $persona->id,

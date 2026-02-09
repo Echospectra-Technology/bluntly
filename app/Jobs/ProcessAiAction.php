@@ -135,12 +135,12 @@ class ProcessAiAction implements ShouldQueue
             throw new \Exception('Invalid vote type');
         }
 
-        // Create vote record
+        // Create vote record with AI persona identifier
         Vote::create([
             'item_type' => Story::class,
             'item_id' => $target->id,
             'value' => $voteType,
-            'cookie_hash' => null, // AI votes don't use cookies
+            'cookie_hash' => 'ai-persona-' . $persona->id, // Unique identifier for AI votes
             'created_at' => now(),
         ]);
 
