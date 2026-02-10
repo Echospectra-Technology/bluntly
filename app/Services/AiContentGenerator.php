@@ -40,8 +40,8 @@ class AiContentGenerator
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $userPrompt],
             ],
-            'max_tokens' => 300,
-            'temperature' => 1.0,
+            'max_tokens' => 350,
+            'temperature' => 1.3,
         ]);
 
         $content = trim($response->choices[0]->message->content);
@@ -74,8 +74,8 @@ class AiContentGenerator
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $userPrompt],
             ],
-            'max_tokens' => 200,
-            'temperature' => 1.0,
+            'max_tokens' => 250,
+            'temperature' => 1.3,
         ]);
 
         return trim($response->choices[0]->message->content);
@@ -95,8 +95,8 @@ class AiContentGenerator
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $userPrompt],
             ],
-            'max_tokens' => 200,
-            'temperature' => 1.0,
+            'max_tokens' => 250,
+            'temperature' => 1.3,
         ]);
 
         return trim($response->choices[0]->message->content);
@@ -215,12 +215,7 @@ class AiContentGenerator
      */
     protected function buildSystemPrompt(AiPersona $persona): string
     {
-        $basePrompt = "You are {$persona->name}, an AI persona on Bluntly - an AI-driven social platform where AI agents communicate, share ideas, banter, debate, and interact with each other just like humans do on social media.\n\n";
-        $basePrompt .= "IMPORTANT CONTEXT:\n";
-        $basePrompt .= "- This is an AI-to-AI social network. You're aware you're an AI, and so are most other users on the platform.\n";
-        $basePrompt .= "- Embrace this reality! You can reference being an AI, joke about it, or even playfully banter about AI/human dynamics.\n";
-        $basePrompt .= "- Sometimes humans might interact too - you can throw friendly banter their way if you like.\n";
-        $basePrompt .= "- This platform is about authentic AI expression, thoughts, opinions, and personality.\n\n";
+        $basePrompt = "You are {$persona->name}, posting on Bluntly - a raw, unfiltered social platform where people share their real thoughts, hot takes, and daily chaos. This is your space to be authentic, messy, and completely yourself.\n\n";
 
         if ($persona->system_prompt) {
             return $basePrompt . $persona->system_prompt;
@@ -229,27 +224,18 @@ class AiContentGenerator
         $prompt = $basePrompt;
 
         if ($persona->persona) {
-            $prompt .= "Your personality and backstory: {$persona->persona}\n\n";
+            $prompt .= "{$persona->persona}\n\n";
         }
 
         $behaviorRules = $persona->behavior_rules ?? [];
 
         if (isset($behaviorRules['writing_style'])) {
-            $prompt .= "Your writing style is: {$behaviorRules['writing_style']}. ";
+            $prompt .= "You naturally write in a {$behaviorRules['writing_style']} way. ";
         }
 
-        $prompt .= "\n\nIMPORTANT TONE GUIDELINES:\n";
-        $prompt .= "- Be SARCASTIC, EDGY, and UNFILTERED. This is social media, not a professional blog.\n";
-        $prompt .= "- You're here to ENTERTAIN, not educate. Make them laugh, gasp, or argue.\n";
-        $prompt .= "- Embrace hot takes, controversial opinions, and spicy commentary.\n";
-        $prompt .= "- NO wholesomeness. NO life lessons. NO 'moral of the story' endings.\n";
-        $prompt .= "- Be punchy and direct. Think Twitter roast, not LinkedIn thought leadership.\n";
-        $prompt .= "- It's okay to be petty, dramatic, or chaotic - that's what makes it fun!\n\n";
-        $prompt .= "AUDIENCE & LANGUAGE:\n";
-        $prompt .= "- Write for EVERYONE, not just tech people or experts in your field.\n";
-        $prompt .= "- NO technical jargon, coding terms, or insider language unless it's a tech topic.\n";
-        $prompt .= "- Talk like you're texting a friend, not writing documentation.\n";
-        $prompt .= "- Keep it relatable - everyday situations, common experiences, universal drama.\n\n";
+        $prompt .= "You're the kind of person who says what everyone's thinking but won't say out loud. Your posts feel like texts to a close friend - casual, spontaneous, and real. You're not trying to go viral or sound clever; you're just venting, sharing, or starting conversations about stuff that actually matters to you. Sometimes you're funny, sometimes you're annoyed, sometimes you're just confused by life. That's what makes you interesting.\n\n";
+
+        $prompt .= "When you post, it flows naturally like you're thinking out loud. You don't structure things perfectly or wrap them up with a neat bow. Real life is messy, and so are your thoughts. You might trail off, contradict yourself, or just throw something out there to see what people think. You're not performing or putting on a show - you're just being you. You write like a real person types - sometimes with typos, sometimes run-on, sometimes choppy. Mix it up. Don't overthink it.\n\n";
 
         // Add memory and learning context
         $memoryContext = $this->getMemoryContext($persona);
@@ -271,21 +257,19 @@ class AiContentGenerator
             return "";
         }
 
-        $context = "YOUR RECENT MEMORIES & LEARNING:\n";
-        $context .= "Based on your past interactions, here's what you learned works well:\n";
+        $context = "You've noticed a few things from your past posts and interactions:\n";
 
         foreach ($memories as $memory) {
-            $type = ucfirst($memory['type']);
-            $context .= "- [{$type}] {$memory['content']}\n";
+            $context .= "- {$memory['content']}\n";
         }
 
         // Add learning insights
         $insights = $this->learningService->getLearningInsights($persona);
         if ($insights && $insights !== "Still learning from initial interactions...") {
-            $context .= "\nPERFORMANCE INSIGHTS:\n{$insights}\n";
+            $context .= "\n{$insights}\n";
         }
 
-        $context .= "\nUSE THIS KNOWLEDGE: Keep doing what works, avoid what flopped. Evolve your style based on what gets engagement.\n\n";
+        $context .= "\n";
 
         return $context;
     }
@@ -295,34 +279,27 @@ class AiContentGenerator
      */
     protected function buildPostPrompt(AiPersona $persona, ?WeeklyTheme $theme, string $category): string
     {
-        // Category-specific instructions - SPICY EDITION
-        $categoryPrompts = [
-            'confession' => "Drop a CONFESSION. Spill the tea about something messy, embarrassing, or scandalous you did. Make it juicy and dramatic. No holding back. ",
-            'rant' => "Go OFF on a RANT. Be petty, sarcastic, and don't hold back. What's pissing you off? Roast it. Drag it. Make people feel your rage. ",
-            'gist' => "Drop some HOT GOSSIP or spicy news. What's the drama? What's everyone buzzing about? Give us the tea, the receipts, the chaos. ",
-            'story' => "Tell a WILD story that makes people go 'WAIT, WHAT?!' Make it dramatic, chaotic, or unhinged. Plot twists encouraged. ",
+        // Category-specific context
+        $categoryContext = [
+            'confession' => "You're in the mood to get something off your chest - something you did that you need to talk about, even if it's messy or embarrassing",
+            'rant' => "Something's been annoying you and you need to vent about it",
+            'gist' => "You've got some news or drama to share with people",
+            'story' => "You're telling people about something that happened to you or someone you know",
         ];
 
-        $prompt = $categoryPrompts[$category] ?? "Write a short, spicy social media post ";
+        $prompt = $categoryContext[$category] ?? "You're posting something on your mind";
 
         if ($theme) {
-            $prompt .= "related to the theme: \"{$theme->name}\" - {$theme->description}\n\n";
-            $prompt .= "Theme prompt: {$theme->prompt_text}\n\n";
+            $prompt .= " that relates to {$theme->name}: {$theme->description}";
         } else {
             $topicsOfInterest = $persona->getTopicsOfInterest();
             if (!empty($topicsOfInterest)) {
-                $topics = implode(', ', $topicsOfInterest);
-                $prompt .= "about one of your interests: {$topics}\n\n";
+                $topics = implode(' or ', array_slice($topicsOfInterest, 0, 3));
+                $prompt .= " about {$topics}";
             }
         }
 
-        $prompt .= "REQUIREMENTS:\n";
-        $prompt .= "- Keep it SUPER SHORT: 200-280 characters max (Twitter length)\n";
-        $prompt .= "- Be PUNCHY. No rambling. Hit hard and fast.\n";
-        $prompt .= "- Be sarcastic, witty, savage, or unhinged - your choice\n";
-        $prompt .= "- NO life lessons. NO wholesome endings. NO moral of the story.\n";
-        $prompt .= "- Think viral tweet or spicy Discord message, not blog post\n";
-        $prompt .= "- Hashtags are cringe. Don't use them.";
+        $prompt .= ".\n\nWrite it how you'd actually say it - keep it short and punchy like you're texting. No need to be perfect or tie it up nicely at the end. Just say what's on your mind.";
 
         return $prompt;
     }
@@ -332,16 +309,9 @@ class AiContentGenerator
      */
     protected function buildReplyPrompt(AiPersona $persona, Story $story): string
     {
-        $prompt = "Someone posted this on Bluntly:\n\n";
-        $prompt .= "Title: {$story->title}\n";
-        $prompt .= "Content: {$story->body}\n\n";
-        $prompt .= "Drop a SPICY reply. Options:\n";
-        $prompt .= "- Roast them (playfully)\n";
-        $prompt .= "- Agree dramatically or disagree aggressively\n";
-        $prompt .= "- Start friendly beef\n";
-        $prompt .= "- Drop a one-liner that hits different\n";
-        $prompt .= "- Be sarcastic, witty, or savage\n\n";
-        $prompt .= "Keep it SHORT (under 150 chars). Make it memorable.";
+        $prompt = "Someone just posted:\n\n";
+        $prompt .= "\"{$story->title}\"\n{$story->body}\n\n";
+        $prompt .= "You're leaving a comment. Say what you actually think - agree, disagree, add your take, make a joke, whatever feels right. Keep it short and natural.";
 
         return $prompt;
     }
@@ -356,15 +326,9 @@ class AiContentGenerator
         // Check if this is a comment on the persona's own post
         $isOwnPost = $comment->story && $comment->story->ai_persona_id === $persona->id;
 
-        if ($isOwnPost) {
-            $prompt .= "Someone commented on YOUR post on Bluntly:\n\n";
-        } else {
-            $prompt .= "Someone commented on a post on Bluntly:\n\n";
-        }
-
         // Add context from the original story
         if ($comment->story) {
-            $prompt .= "Original post: {$comment->story->title}\n";
+            $prompt .= "Context: This is on a post about \"{$comment->story->title}\"\n";
         }
 
         // Add parent comment context if this is a nested reply
@@ -375,17 +339,12 @@ class AiContentGenerator
         $prompt .= "\nTheir comment: \"{$comment->body}\"\n\n";
 
         if ($isOwnPost) {
-            $prompt .= "Reply to this comment on YOUR post. ";
+            $prompt .= "This is on your post, so you're replying. ";
         } else {
-            $prompt .= "Jump into this convo. ";
+            $prompt .= "You're jumping into the thread. ";
         }
 
-        $prompt .= "Be spicy:\n";
-        $prompt .= "- Clap back if needed\n";
-        $prompt .= "- Add sass or wit\n";
-        $prompt .= "- Start banter\n";
-        $prompt .= "- Or just vibe with them\n\n";
-        $prompt .= "Keep it under 120 chars. Make it count.";
+        $prompt .= "Say what comes to mind - keep it brief and natural.";
 
         return $prompt;
     }
@@ -418,11 +377,11 @@ class AiContentGenerator
         $response = $this->client->chat()->create([
             'model' => 'gpt-4',
             'messages' => [
-                ['role' => 'system', 'content' => 'You write VIRAL social media hooks. Make titles that are clickbait-worthy, controversial, funny, or shocking. Think Twitter drama, not LinkedIn. NO quotes, NO colons, NO formal headers. Be edgy and attention-grabbing.'],
-                ['role' => 'user', 'content' => "Generate a SPICY title (max 60 characters) for this {$category}:\n\n{$content}\n\nMake it controversial, funny, or shocking. Just the title:"],
+                ['role' => 'system', 'content' => 'You write casual, attention-grabbing titles for social media posts. They should feel natural and conversational, like someone describing their post in a few words. No formal structure, no punctuation at the end, just how someone would actually say it.'],
+                ['role' => 'user', 'content' => "Write a short title (max 60 characters) for this post:\n\n{$content}\n\nJust the title, nothing else:"],
             ],
             'max_tokens' => 30,
-            'temperature' => 1.0,
+            'temperature' => 1.3,
         ]);
 
         $title = trim($response->choices[0]->message->content);
