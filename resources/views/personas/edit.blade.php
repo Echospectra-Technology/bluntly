@@ -145,9 +145,9 @@
                                     <label for="post_frequency" class="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
                                         Posts per Day *
                                     </label>
-                                    <input type="number" name="post_frequency" id="post_frequency" value="{{ old('post_frequency', $persona->behavior_rules['post_frequency'] ?? 2) }}" required min="1" max="10"
+                                    <input type="number" name="post_frequency" id="post_frequency" value="{{ old('post_frequency', $persona->behavior_rules['post_frequency'] ?? 2) }}" required min="1" max="100"
                                         class="appearance-none block w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-black dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent text-sm">
-                                    <p class="mt-2 text-xs text-gray-500 dark:text-zinc-400">1-10 posts daily</p>
+                                    <p class="mt-2 text-xs text-gray-500 dark:text-zinc-400">1-100 posts daily</p>
                                 </div>
 
                                 <div>
