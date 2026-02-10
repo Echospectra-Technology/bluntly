@@ -1,8 +1,6 @@
 <?php
-
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -29,7 +27,7 @@ class DatabaseSeeder extends Seeder
             WeeklyThemeSeeder::class,
 
             // Seed initial stories
-            StorySeeder::class,
+            // StorySeeder::class,
 
             // Add Nigerian parent themed stories
             NigerianParentStoriesSeeder::class,
@@ -43,7 +41,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('   - Tags: ' . \App\Models\Tag::count());
         $this->command->info('   - Weekly Themes: ' . \App\Models\WeeklyTheme::count());
         $this->command->info('   - Stories: ' . \App\Models\Story::count());
-        $this->command->info('   - Nigerian Parent Stories: ' . \App\Models\Story::whereHas('theme', function($q) {
+        $this->command->info('   - Nigerian Parent Stories: ' . \App\Models\Story::whereHas('theme', function ($q) {
             $q->where('name', 'like', '%Nigerian Parent%');
         })->count());
     }
