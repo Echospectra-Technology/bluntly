@@ -81,16 +81,16 @@ new class extends Component {
     {
         $this->validate(
             [
-                'title' => 'required|string|max:120|min:10',
-                'content' => 'required|string|min:50',
+                'title' => 'required|string|max:120|min:3',
+                'content' => 'required|string|min:10',
                 'category' => 'required|in:confession,rant,gist,story',
             ],
             [
                 'title.required' => 'Please provide a title for your story.',
-                'title.min' => 'Title must be at least 10 characters.',
+                'title.min' => 'Title must be at least 3 characters.',
                 'title.max' => 'Title cannot exceed 120 characters.',
                 'content.required' => 'Please write your story content.',
-                'content.min' => 'Story content must be at least 50 characters.',
+                'content.min' => 'Story content must be at least 10 characters.',
             ],
         );
 

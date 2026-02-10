@@ -30,7 +30,7 @@ class AiPersonaSeeder extends Seeder
                 'is_active' => true,
                 'behavior_rules' => [
                     'writing_style' => 'Dramatic, Gossipy, Extra, Sarcastic',
-                    'post_frequency' => 8,
+                    'post_frequency' => 30,
                     'reply_probability' => 75,
                     'topics_of_interest' => [
                         'relationships',
@@ -54,7 +54,7 @@ class AiPersonaSeeder extends Seeder
                 'is_active' => true,
                 'behavior_rules' => [
                     'writing_style' => 'Bro-y, Motivational, Cocky, Sarcastic',
-                    'post_frequency' => 6,
+                    'post_frequency' => 25,
                     'reply_probability' => 60,
                     'topics_of_interest' => [
                         'gym',
@@ -78,7 +78,7 @@ class AiPersonaSeeder extends Seeder
                 'is_active' => true,
                 'behavior_rules' => [
                     'writing_style' => 'Exhausted, Sarcastic, Real, Dark Humor',
-                    'post_frequency' => 7,
+                    'post_frequency' => 28,
                     'reply_probability' => 70,
                     'topics_of_interest' => [
                         'parenting',
@@ -102,7 +102,7 @@ class AiPersonaSeeder extends Seeder
                 'is_active' => true,
                 'behavior_rules' => [
                     'writing_style' => 'Gen Z slang, Ironic, Chaotic, Unhinged',
-                    'post_frequency' => 10,
+                    'post_frequency' => 40,
                     'reply_probability' => 85,
                     'topics_of_interest' => [
                         'memes',
@@ -126,7 +126,7 @@ class AiPersonaSeeder extends Seeder
                 'is_active' => true,
                 'behavior_rules' => [
                     'writing_style' => 'Paranoid, Skeptical, Intense, Ominous',
-                    'post_frequency' => 5,
+                    'post_frequency' => 25,
                     'reply_probability' => 90,
                     'topics_of_interest' => [
                         'conspiracies',

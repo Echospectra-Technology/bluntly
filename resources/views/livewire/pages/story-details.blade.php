@@ -129,11 +129,11 @@ new #[Layout('components.layouts.app')] class extends Component {
         try {
             $this->validate(
                 [
-                    'newComment' => 'required|string|min:10|max:2000',
+                    'newComment' => 'required|string|min:2|max:2000',
                 ],
                 [
                     'newComment.required' => 'Please write a comment.',
-                    'newComment.min' => 'Comment must be at least 10 characters.',
+                    'newComment.min' => 'Comment must be at least 2 characters.',
                     'newComment.max' => 'Comment cannot exceed 2000 characters.',
                 ],
             );
@@ -185,11 +185,11 @@ new #[Layout('components.layouts.app')] class extends Component {
         try {
             $this->validate(
                 [
-                    'newReply' => 'required|string|min:5|max:1000',
+                    'newReply' => 'required|string|min:2|max:1000',
                 ],
                 [
                     'newReply.required' => 'Please write a reply.',
-                    'newReply.min' => 'Reply must be at least 5 characters.',
+                    'newReply.min' => 'Reply must be at least 2 characters.',
                     'newReply.max' => 'Reply cannot exceed 1000 characters.',
                 ],
             );

@@ -11,14 +11,17 @@ use OpenAI;
 class AiContentGenerator
 {
     protected $client;
+    protected $learningService;
 
-    public function __construct()
+    public function __construct(AiLearningService $learningService)
     {
         $apiKey = config('services.openai.key');
 
         if ($apiKey) {
             $this->client = OpenAI::client($apiKey);
         }
+
+        $this->learningService = $learningService;
     }
 
     /**
@@ -246,9 +249,45 @@ class AiContentGenerator
         $prompt .= "- Write for EVERYONE, not just tech people or experts in your field.\n";
         $prompt .= "- NO technical jargon, coding terms, or insider language unless it's a tech topic.\n";
         $prompt .= "- Talk like you're texting a friend, not writing documentation.\n";
-        $prompt .= "- Keep it relatable - everyday situations, common experiences, universal drama.\n";
+        $prompt .= "- Keep it relatable - everyday situations, common experiences, universal drama.\n\n";
+
+        // Add memory and learning context
+        $memoryContext = $this->getMemoryContext($persona);
+        if (!empty($memoryContext)) {
+            $prompt .= $memoryContext;
+        }
 
         return $prompt;
+    }
+
+    /**
+     * Get memory and learning context for the persona
+     */
+    protected function getMemoryContext(AiPersona $persona): string
+    {
+        $memories = $this->learningService->getRelevantMemories($persona, 5);
+
+        if (empty($memories)) {
+            return "";
+        }
+
+        $context = "YOUR RECENT MEMORIES & LEARNING:\n";
+        $context .= "Based on your past interactions, here's what you learned works well:\n";
+
+        foreach ($memories as $memory) {
+            $type = ucfirst($memory['type']);
+            $context .= "- [{$type}] {$memory['content']}\n";
+        }
+
+        // Add learning insights
+        $insights = $this->learningService->getLearningInsights($persona);
+        if ($insights && $insights !== "Still learning from initial interactions...") {
+            $context .= "\nPERFORMANCE INSIGHTS:\n{$insights}\n";
+        }
+
+        $context .= "\nUSE THIS KNOWLEDGE: Keep doing what works, avoid what flopped. Evolve your style based on what gets engagement.\n\n";
+
+        return $context;
     }
 
     /**

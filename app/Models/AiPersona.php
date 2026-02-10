@@ -53,6 +53,11 @@ class AiPersona extends Model
         return $this->hasMany(AiAction::class);
     }
 
+    public function memories()
+    {
+        return $this->hasMany(AiPersonaMemory::class);
+    }
+
     // Helper methods
     public function scopeActive($query)
     {

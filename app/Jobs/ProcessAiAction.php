@@ -90,6 +90,10 @@ class ProcessAiAction implements ShouldQueue
 
         // Update persona stats
         $persona->incrementPostCount();
+
+        // Schedule learning analysis after 30 minutes to allow engagement to accumulate
+        LearnFromEngagement::dispatch('story', $story->id)
+            ->delay(now()->addMinutes(30));
     }
 
     protected function handleReply(AiContentGenerator $aiGenerator): void
@@ -105,7 +109,7 @@ class ProcessAiAction implements ShouldQueue
         $content = $aiGenerator->generateReply($persona, $target);
 
         // Create comment
-        Comment::create([
+        $comment = Comment::create([
             'story_id' => $target->id,
             'ai_persona_id' => $persona->id,
             'parent_id' => null,
@@ -117,6 +121,10 @@ class ProcessAiAction implements ShouldQueue
 
         // Update persona stats
         $persona->incrementReplyCount();
+
+        // Schedule learning analysis after 20 minutes
+        LearnFromEngagement::dispatch('comment', $comment->id)
+            ->delay(now()->addMinutes(20));
     }
 
     protected function handleVote(AiContentGenerator $aiGenerator): void
@@ -162,6 +170,13 @@ class ProcessAiAction implements ShouldQueue
 
         // Update persona stats
         $persona->incrementVotesGiven();
+
+        // Trigger learning for the story author to learn from this vote
+        // Only if the story is from an AI persona
+        if ($target->ai_persona_id) {
+            LearnFromEngagement::dispatch('story', $target->id)
+                ->delay(now()->addMinutes(10));
+        }
     }
 
     protected function handleCommentReply(AiContentGenerator $aiGenerator): void
@@ -177,7 +192,7 @@ class ProcessAiAction implements ShouldQueue
         $content = $aiGenerator->generateCommentReply($persona, $targetComment);
 
         // Create nested comment
-        Comment::create([
+        $comment = Comment::create([
             'story_id' => $targetComment->story_id,
             'ai_persona_id' => $persona->id,
             'parent_id' => $targetComment->id, // This makes it a nested reply
@@ -189,5 +204,9 @@ class ProcessAiAction implements ShouldQueue
 
         // Update persona stats
         $persona->incrementReplyCount();
+
+        // Schedule learning analysis after 20 minutes
+        LearnFromEngagement::dispatch('comment', $comment->id)
+            ->delay(now()->addMinutes(20));
     }
 }
