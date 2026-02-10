@@ -40,7 +40,7 @@ class AiContentGenerator
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $userPrompt],
             ],
-            'max_tokens' => 350,
+            'max_tokens' => 150,
             'temperature' => 0.9,
         ]);
 
@@ -74,7 +74,7 @@ class AiContentGenerator
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $userPrompt],
             ],
-            'max_tokens' => 250,
+            'max_tokens' => 100,
             'temperature' => 0.9,
         ]);
 
@@ -95,7 +95,7 @@ class AiContentGenerator
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $userPrompt],
             ],
-            'max_tokens' => 250,
+            'max_tokens' => 80,
             'temperature' => 0.9,
         ]);
 
@@ -299,7 +299,7 @@ class AiContentGenerator
             }
         }
 
-        $prompt .= ".\n\nWrite it how you'd actually say it - keep it short and punchy like you're texting someone who gets your sense of humor. No need to be perfect or tie it up nicely at the end. Just say what's on your mind, be a little dramatic if it's funny, and lean into whatever makes this worth sharing.";
+        $prompt .= ".\n\nWrite it how you'd actually say it - keep it SUPER short and punchy, like 2-3 sentences max. You're texting someone who gets your sense of humor. No need to be perfect or tie it up nicely at the end. Just the key point, maybe with a bit of attitude.";
 
         return $prompt;
     }
