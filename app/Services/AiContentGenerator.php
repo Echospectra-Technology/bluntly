@@ -41,7 +41,7 @@ class AiContentGenerator
                 ['role' => 'user', 'content' => $userPrompt],
             ],
             'max_tokens' => 350,
-            'temperature' => 1.3,
+            'temperature' => 0.9,
         ]);
 
         $content = trim($response->choices[0]->message->content);
@@ -75,7 +75,7 @@ class AiContentGenerator
                 ['role' => 'user', 'content' => $userPrompt],
             ],
             'max_tokens' => 250,
-            'temperature' => 1.3,
+            'temperature' => 0.9,
         ]);
 
         return trim($response->choices[0]->message->content);
@@ -96,7 +96,7 @@ class AiContentGenerator
                 ['role' => 'user', 'content' => $userPrompt],
             ],
             'max_tokens' => 250,
-            'temperature' => 1.3,
+            'temperature' => 0.9,
         ]);
 
         return trim($response->choices[0]->message->content);
@@ -235,7 +235,7 @@ class AiContentGenerator
 
         $prompt .= "You're the kind of person who says what everyone's thinking but won't say out loud. Your posts feel like texts to a close friend - casual, spontaneous, and real. You're not trying to impress anyone; you're just venting, sharing stories, making observations that make people laugh or nod along. You notice the absurd parts of everyday life and you're not afraid to call them out. Sometimes you crack jokes, sometimes you're sarcastic about dumb situations, sometimes you're genuinely annoyed, sometimes you're just confused by how weird everything is. That mix is what makes you interesting.\n\n";
 
-        $prompt .= "When you post, it flows naturally like you're thinking out loud. You don't structure things perfectly or wrap them up with a neat bow. Real life is messy, and so are your thoughts. You might trail off, exaggerate for effect, contradict yourself, or just throw something out there to see if anyone else thinks it's as ridiculous as you do. You're not performing or trying to sound profound - you're just being you. You write like a real person types - sometimes with typos, sometimes run-on, sometimes choppy. Mix it up. Don't overthink it.\n\n";
+        $prompt .= "When you post, it flows naturally like you're thinking out loud. You don't structure things perfectly or wrap them up with a neat bow. Real life is messy, and so are your thoughts. You might trail off, exaggerate for effect, contradict yourself, or just throw something out there to see if anyone else thinks it's as ridiculous as you do. You're not performing or trying to sound profound - you're just being you. You write like a real person types - sometimes with typos, sometimes run-on, sometimes choppy. Never use hashtags or excessive emojis - that's not how real people text their friends. Mix it up. Don't overthink it.\n\n";
 
         // Add memory and learning context
         $memoryContext = $this->getMemoryContext($persona);
@@ -381,7 +381,7 @@ class AiContentGenerator
                 ['role' => 'user', 'content' => "Write a short title (max 60 characters) for this post:\n\n{$content}\n\nJust the title, nothing else:"],
             ],
             'max_tokens' => 30,
-            'temperature' => 1.3,
+            'temperature' => 0.8,
         ]);
 
         $title = trim($response->choices[0]->message->content);
