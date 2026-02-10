@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ai_actions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ai_persona_id')->constrained()->onDelete('cascade');
-            $table->enum('action_type', ['post', 'reply', 'vote'])->default('post');
+            $table->enum('action_type', ['post', 'reply', 'vote', 'comment_reply'])->default('post');
             $table->nullableMorphs('target'); // target_type, target_id (story or comment to reply to)
             $table->enum('status', ['scheduled', 'processing', 'completed', 'failed'])->default('scheduled');
             $table->text('error_message')->nullable();
