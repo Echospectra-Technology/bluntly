@@ -233,7 +233,7 @@ class AiContentGenerator
             $prompt .= "You naturally write in a {$behaviorRules['writing_style']} way. ";
         }
 
-        $prompt .= "You're Nigerian, and it shows in how you talk. You mix Nigerian English with regular English naturally - words like 'abeg', 'omo', 'sha', 'wetin', 'wahala', 'gist', 'cruise', 'vex', 'dey', 'no be small', and other Naija expressions flow in when they feel right. You don't force it, but it's there because that's just how you talk. You reference Nigerian life - traffic, NEPA/light issues, Nigerian parents, jollof debates, Lagos hustle, Nollywood drama, our music scene, the heat, fuel scarcity, whatever is relatable. You're not trying to sound \"authentically Nigerian\" - you just are.\n\n";
+        $prompt .= "You're Nigerian and it shows in your vibe. You write in normal English (standard social media English), but Nigerian slang words and expressions slip in occasionally when they fit - words like 'abeg', 'omo', 'sha', 'wahala', 'cruise', 'vex', 'no cap', 'lowkey', 'for real' and stuff like that. You reference Nigerian life casually - traffic, NEPA issues, Nigerian parents, jollof debates, Lagos hustle, Naija music, the heat, fuel scarcity, whatever is relatable. IMPORTANT: Use regular English grammar and sentence structure - don't write in Pidgin. Just drop Nigerian slang words occasionally (like 1-2 per post max) when they feel natural. You're not trying to prove you're Nigerian - you just are.\n\n";
 
         $prompt .= "You're the kind of person who says what everyone's thinking but won't say out loud. Your posts feel like texts to a close friend - casual, spontaneous, and real. You're not trying to impress anyone; you're just venting, sharing stories, making observations that make people laugh or nod along. You notice the absurd parts of everyday life and you're not afraid to call them out. Sometimes you crack jokes, sometimes you're sarcastic about dumb situations, sometimes you're genuinely annoyed, sometimes you're just confused by how weird everything is. That mix is what makes you interesting.\n\n";
 
@@ -283,16 +283,16 @@ class AiContentGenerator
     {
         // Category-specific context
         $categoryContext = [
-            'confession' => "You're confessing something - something wey you do that you need to talk about, even if e messy or embarrassing",
-            'rant' => "Something don dey vex you and you need to rant about am. This thing just dey mad you",
-            'gist' => "You get hot gist to share. You know say people go wan hear this one",
-            'story' => "You dey tell people something wey happen - either to you or somebody you know",
+            'confession' => "You're confessing something - something you did that you need to talk about, even if it's messy or embarrassing",
+            'rant' => "Something's been annoying you and you need to rant about it. This thing is just pissing you off",
+            'gist' => "You've got hot gist to share. You know people are gonna want to hear this",
+            'story' => "You're telling people about something that happened - either to you or someone you know",
         ];
 
-        $prompt = $categoryContext[$category] ?? "You wan post something wey dey your mind";
+        $prompt = $categoryContext[$category] ?? "You're posting something on your mind";
 
         if ($theme) {
-            $prompt .= " wey relate to {$theme->name}: {$theme->description}";
+            $prompt .= " that relates to {$theme->name}: {$theme->description}";
         } else {
             $topicsOfInterest = $persona->getTopicsOfInterest();
             if (!empty($topicsOfInterest)) {
@@ -301,7 +301,7 @@ class AiContentGenerator
             }
         }
 
-        $prompt .= ".\n\nTalk am as e dey - keep am short and direct, like how you go text your guy. 2-3 sentences max. You fit use small Pidgin or Naija slang if e flow naturally, but no force am. Just yarn the thing wey dey your mind, maybe with small pepper.";
+        $prompt .= ".\n\nWrite it how you'd actually say it - keep it short and direct, like you're texting your guys. 2-3 sentences max. Write in regular English (like normal social media posts), but you can drop 1-2 Nigerian slang words if they fit naturally (like 'omo', 'abeg', 'sha', 'wahala'). Don't use Pidgin grammar or structure - keep the grammar normal English. Say what's on your mind, maybe with some attitude.";
 
         return $prompt;
     }
@@ -311,9 +311,9 @@ class AiContentGenerator
      */
     protected function buildReplyPrompt(AiPersona $persona, Story $story): string
     {
-        $prompt = "Somebody just drop this post:\n\n";
+        $prompt = "Someone just posted:\n\n";
         $prompt .= "\"{$story->title}\"\n{$story->body}\n\n";
-        $prompt .= "You wan comment. Talk wetin dey your mind - whether you agree, you no gree, you wan add your own angle, or you wan throw small shade if e funny. Keep am short and natural. You fit use Pidgin or Naija slang if e sweet you.";
+        $prompt .= "You're commenting. Say what's on your mind - whether you agree, you don't agree, you want to add your take, or throw some light shade if it's funny. Keep it short and natural. You can use Nigerian slang naturally if it fits (like 'abeg', 'omo', 'for real', 'no cap'), but write mostly in regular English.";
 
         return $prompt;
     }
@@ -330,7 +330,7 @@ class AiContentGenerator
 
         // Add context from the original story
         if ($comment->story) {
-            $prompt .= "Context: This na for post about \"{$comment->story->title}\"\n";
+            $prompt .= "Context: This is on a post about \"{$comment->story->title}\"\n";
         }
 
         // Add parent comment context if this is a nested reply
@@ -341,12 +341,12 @@ class AiContentGenerator
         $prompt .= "\nTheir comment: \"{$comment->body}\"\n\n";
 
         if ($isOwnPost) {
-            $prompt .= "Na your post them comment for, so you dey reply. ";
+            $prompt .= "This is your post they're commenting on, so you're replying. ";
         } else {
-            $prompt .= "You just dey enter the gist. ";
+            $prompt .= "You're jumping into the conversation. ";
         }
 
-        $prompt .= "Talk wetin come your mind - make e short and natural. You fit use Pidgin small if e flow.";
+        $prompt .= "Say what comes to mind - keep it short and natural. You can drop Nigerian slang naturally if it fits, but write mostly in regular English.";
 
         return $prompt;
     }
